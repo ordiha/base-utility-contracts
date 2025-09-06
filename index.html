@@ -9,7 +9,7 @@
 <body>
     <h1>TipJar</h1>
     <img src="https://i.imgur.com/wVKHjmy.jpeg/300x200?text=TipJar+Image" alt="TipJar Image" style="width: 300px; height: auto;">
-    <button onclick="tip()">Tip 0.0001 ETH</button>
+    <button onclick="tip()">Tip 0.000001 ETH</button>
     <p>Balance: <span id="tipBalance"></span> ETH</p>
     <p id="status"></p>
 
@@ -30,7 +30,7 @@
                 const contract = new web3.eth.Contract(tipAbi, tipAddress);
                 await contract.methods.tip().send({
                     from: accounts[0],
-                    value: web3.utils.toWei('0.0001', 'ether')
+                    value: web3.utils.toWei('0.000001', 'ether')
                 });
                 status.innerText = "Tipped! Updating balance...";
                 updateBalance();
