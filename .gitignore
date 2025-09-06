@@ -1,0 +1,27 @@
+# Remix compiler artifacts
+/artifacts/
+cache/
+
+# Remix plugin state folders
+deps/
+states/
+
+# Debug info
+*.dbg.json
+
+# Environment files
+.env
+.env.local
+
+# macOS system files
+.DS_Store
+
+# Log files
+*.log
+
+# Test and coverage artifacts
+coverage/
+coverage.json
+
+# Dependency directories
+node_modules/
