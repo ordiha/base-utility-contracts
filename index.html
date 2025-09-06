@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TipJar on Base</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+</head>
+<body>
+    <h1>TipJar</h1>
+    <button onclick="tip()">Tip 0.0001 ETH</button>
+    <p>Balance: <span id="tipBalance"></span> ETH</p>
+
+    <script>
+        const web3 = new Web3(window.ethereum);
+        const tipAddress = '0x62A3536df479317Bd76480F801278867dB1603Ff'; // Replace with your deployed address
+        const tipAbi = [
+            {"inputs":[],"name":"tip","outputs":[],"stateMutability":"payable","type":"function"},
+            {"inputs":[],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+        ];
+
+        async function tip() {
+            const contract = new web3.eth.Contract(tipAbi, tipAddress);
+            await contract.methods.tip().send({ from: (await web3.eth.getAccounts())[0], value: web3.utils.toWei('0.0001', 'ether') });
+            updateBalance();
+        }
+
+        async function updateBalance() {
+            const contract = new web3.eth.Contract(tipAbi, tipAddress);
+            const balance = await contract.methods.getBalance().call();
+            document.getElementById('tipBalance').innerText = web3.utils.fromWei(balance, 'ether');
+        }
+
+        updateBalance();
+    </script>
+</body>
+</html>
