@@ -7,6 +7,7 @@ This repository contains smart contracts deployed on the Base network to enhance
   - Address: 0x62A3536df479317Bd76480F801278867dB1603Ff
 Storageunit contract: 0x02FB8E219ac0E544B4E107Ab8B89a4Ce335F2A05 link: https://basescan.org/address/0x02fb8e219ac0e544b4e107ab8b89a4ce335f2a05#code
 Randompicker contract: 0xA178dF985feAa35c60DCEe330dD0F5F5a26eE1Ea   link: https://basescan.org/address/0xa178df985feaa35c60dcee330dd0f5f5a26ee1ea#code
+Greetingcard contract:0x95178C466682ae7482AFeF6c9A32e95C826c4Ecd   link:https://basescan.org/address/0x95178c466682ae7482afef6c9a32e95c826c4ecd#code
 
   - 
   - Front-end: https://glittering-kitten-78d6c7.netlify.app/
