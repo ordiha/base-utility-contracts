@@ -3,23 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TipJar on Base</title>
+    <title>TipJar and VotePoll on Base</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
 </head>
 <body>
     <h1>TipJar</h1>
-    <img src="https://i.imgur.com/wVKHjmy.jpeg/300x200?text=TipJar+Image" alt="TipJar Image" style="width: 300px; height: auto;">
-    <button onclick="tip()">Tip 0.000001 ETH</button>
+    <img src="https://i.imgur.com/YourImageId.jpg" alt="TipJar Image" style="width: 300px; height: auto;">
+    <button onclick="tip()">Tip 0.0001 ETH</button>
     <p>Balance: <span id="tipBalance"></span> ETH</p>
+
+    <h1>VotePoll: Should Base grow?</h1>
+    <button onclick="voteYes()">Yes</button>
+    <button onclick="voteNo()">No</button>
+    <p>Yes: <span id="yesVotes"></span>, No: <span id="noVotes"></span></p>
     <p id="status"></p>
 
     <script>
         const web3 = new Web3(window.ethereum);
-        const tipAddress = '0x62A3536df479317Bd76480F801278867dB1603Ff'; // Replace with your deployed address
-        const tipAbi = [
-            {"inputs":[],"name":"tip","outputs":[],"stateMutability":"payable","type":"function"},
-            {"inputs":[],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-        ];
+        const tipAddress = 'YOUR_TIPJAR_ADDRESS';
+        const voteAddress = 'YOUR_VOTEPOLL_ADDRESS';
+        const tipAbi = [{"inputs":[],"name":"tip","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+        const voteAbi = [{"inputs":[{"internalType":"bool","name":"_yes","type":"bool"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getResults","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 
         async function tip() {
             const status = document.getElementById("status");
@@ -28,12 +32,26 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(tipAbi, tipAddress);
-                await contract.methods.tip().send({
-                    from: accounts[0],
-                    value: web3.utils.toWei('0.000001', 'ether')
-                });
+                await contract.methods.tip().send({ from: accounts[0], value: web3.utils.toWei('0.0001', 'ether') });
                 status.innerText = "Tipped! Updating balance...";
                 updateBalance();
+            } catch (error) {
+                status.innerText = "Error: " + error.message;
+            }
+        }
+
+        async function voteYes() { vote(true); }
+        async function voteNo() { vote(false); }
+        async function vote(_yes) {
+            const status = document.getElementById("status");
+            status.innerText = "Voting...";
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(voteAbi, voteAddress);
+                await contract.methods.vote(_yes).send({ from: accounts[0] });
+                status.innerText = "Voted! Updating results...";
+                updateResults();
             } catch (error) {
                 status.innerText = "Error: " + error.message;
             }
@@ -45,7 +63,15 @@
             document.getElementById('tipBalance').innerText = web3.utils.fromWei(balance, 'ether');
         }
 
+        async function updateResults() {
+            const contract = new web3.eth.Contract(voteAbi, voteAddress);
+            const [yes, no] = await contract.methods.getResults().call();
+            document.getElementById('yesVotes').innerText = yes;
+            document.getElementById('noVotes').innerText = no;
+        }
+
         updateBalance();
+        updateResults();
     </script>
 </body>
 </html>
