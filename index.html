@@ -20,8 +20,8 @@
 
     <script>
         const web3 = new Web3(window.ethereum);
-        const tipAddress = 'YOUR_TIPJAR_ADDRESS';
-        const voteAddress = 'YOUR_VOTEPOLL_ADDRESS';
+        const tipAddress = '0x62A3536df479317Bd76480F801278867dB1603Ff';
+        const voteAddress = '0xCb8A9D3E1Bd3Ea1793DED3373CA1CAc1969766A1';
         const tipAbi = [{"inputs":[],"name":"tip","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
         const voteAbi = [{"inputs":[{"internalType":"bool","name":"_yes","type":"bool"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getResults","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 
