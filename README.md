@@ -4,7 +4,8 @@ This repository contains smart contracts deployed on the Base network to enhance
 
 ## Deployed Contracts
 - **TipJar**: A contract where users can send small ETH tips (0.000001 ETH). Deployed on Base mainnet.
-  - Address: 0x62A3536df479317Bd76480F801278867dB1603Ff
+
+StorageUnit contract: 0x62A3536df479317Bd76480F801278867dB1603Ff  link: https://basescan.org/address/0x02fb8e219ac0e544b4e107ab8b89a4ce335f2a05#code
 Storageunit contract: 0x02FB8E219ac0E544B4E107Ab8B89a4Ce335F2A05 link: https://basescan.org/address/0x02fb8e219ac0e544b4e107ab8b89a4ce335f2a05#code
 
 Randompicker contract: 0xA178dF985feAa35c60DCEe330dD0F5F5a26eE1Ea   link: https://basescan.org/address/0xa178df985feaa35c60dcee330dd0f5f5a26ee1ea#code
