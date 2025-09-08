@@ -5,17 +5,17 @@ This repository contains smart contracts deployed on the Base network to enhance
 ## Deployed Contracts
 - **TipJar**: A contract where users can send small ETH tips (0.000001 ETH). Deployed on Base mainnet.
 
-- TipJar contract: 0x62A3536df479317Bd76480F801278867dB1603Ff link:https://basescan.org/address/0x62a3536df479317bd76480f801278867db1603ff#code
+TipJar contract: 0x62A3536df479317Bd76480F801278867dB1603Ff link:https://basescan.org/address/0x62a3536df479317bd76480f801278867db1603ff#code
 
-- VotePoll contract: 0xCb8A9D3E1Bd3Ea1793DED3373CA1CAc1969766A1  link:https://basescan.org/address/0xcb8a9d3e1bd3ea1793ded3373ca1cac1969766a1#code
+VotePoll contract: 0xCb8A9D3E1Bd3Ea1793DED3373CA1CAc1969766A1  link:https://basescan.org/address/0xcb8a9d3e1bd3ea1793ded3373ca1cac1969766a1#code
 
-- SimpleTimer contract: 0xC1949249093af2d0aaB8a2D2B241e0B828171DE7  link: https://basescan.org/address/0xc1949249093af2d0aab8a2d2b241e0b828171de7#code
+SimpleTimer contract: 0xC1949249093af2d0aaB8a2D2B241e0B828171DE7  link: https://basescan.org/address/0xc1949249093af2d0aab8a2d2b241e0b828171de7#code
 
-- GiveawayBox contract: 0xea23EC1b0fF0316D8FeD21f26E86aF422fbd6e63  link:https://basescan.org/address/0xea23ec1b0ff0316d8fed21f26e86af422fbd6e63#code
+GiveawayBox contract: 0xea23EC1b0fF0316D8FeD21f26E86aF422fbd6e63  link:https://basescan.org/address/0xea23ec1b0ff0316d8fed21f26e86af422fbd6e63#code
 
-- MessageBoard contract: 0x716CfE1272Ed90A33050af469A83852bE2Ff9260  link: https://basescan.org/address/0x716cfe1272ed90a33050af469a83852be2ff9260#code
+MessageBoard contract: 0x716CfE1272Ed90A33050af469A83852bE2Ff9260  link: https://basescan.org/address/0x716cfe1272ed90a33050af469a83852be2ff9260#code
 
-- Counter contract: 0x4e42F24592c5F44D8B7E550253A21d14EFF69d29   link: https://basescan.org/address/0x4e42f24592c5f44d8b7e550253a21d14eff69d29#writeContract
+Counter contract: 0x4e42F24592c5F44D8B7E550253A21d14EFF69d29   link: https://basescan.org/address/0x4e42f24592c5f44d8b7e550253a21d14eff69d29#writeContract
 
 Storageunit contract: 0x02FB8E219ac0E544B4E107Ab8B89a4Ce335F2A05 link: https://basescan.org/address/0x02fb8e219ac0e544b4e107ab8b89a4ce335f2a05#code
 
