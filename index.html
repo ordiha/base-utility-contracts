@@ -62,7 +62,7 @@
 <body>
     <div class="container">
         <h1>Base Utility Hub</h1>
-        <img src="https://i.imgur.com/RX6iiwh.jpeg" alt="Base Utility Hub" style="width: 300px; height: auto;">
+        <img src="https://i.imgur.com/YourImageId.jpg" alt="Base Utility Hub" style="width: 300px; height: auto;">
 
         <div class="section">
             <h2>TipJar</h2>
@@ -156,6 +156,30 @@
             <p>Your Feedback: <span id="feedback"></span></p>
         </div>
 
+        <div class="section">
+            <h2>WishList</h2>
+            <button onclick="addWish()">Add Wish</button>
+            <p>Your Wish: <span id="wish"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>QuizGame</h2>
+            <button onclick="answerQuiz()">Answer Correct</button>
+            <p>Score: <span id="quizScore"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>DonationPool</h2>
+            <button onclick="donate()">Donate 0.0000001 ETH</button>
+            <p>Total Donations: <span id="donationTotal"></span> ETH</p>
+        </div>
+
+        <div class="section">
+            <h2>ProfileBadge</h2>
+            <button onclick="earnBadge()">Earn Badge</button>
+            <p>Your Badge: <span id="badge"></span></p>
+        </div>
+
         <p id="status"></p>
     </div>
 
@@ -176,7 +200,11 @@
             priceChecker: '0x3eD3151Ea8B0D7D210feB46d4880E352bC77E97b',
             todoList: '0xF047e5B232e87386b114AeEDcF0AEfB8090e064f',
             scoreboard: '0xdb1A13153F2441e9E220cb88162160DC889DA33b',
-            feedbackBox: '0x106520CcBf8C35df8B6D0c3ab850Bfd39544Aa56'
+            feedbackBox: '0x106520CcBf8C35df8B6D0c3ab850Bfd39544Aa56',
+            wishList: '0x8a5E1BC983B249c7D7a8f8624e53D613e02fA825',
+            quizGame: '0xd87022114a708067Dec44ae96E46D13a66815420',
+            donationPool: '0x9FEa4f273da54A5Ed9dC2E95eb5940B59049f3a6',
+            profileBadge: '0x38E160E83F7fe08fc33CcEB395f7E1bA490B3D66'
         };
         const abis = {
             tipJar: [{"inputs":[],"name":"tip","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
@@ -193,7 +221,11 @@
             priceChecker: [{"inputs":[{"internalType":"uint256","name":"_price","type":"uint256"}],"name":"setPrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
             todoList: [{"inputs":[{"internalType":"string","name":"_task","type":"string"}],"name":"addTask","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTask","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
             scoreboard: [{"inputs":[{"internalType":"uint256","name":"_score","type":"uint256"}],"name":"addScore","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getScore","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
-            feedbackBox: [{"inputs":[{"internalType":"string","name":"_feedback","type":"string"}],"name":"submitFeedback","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getFeedback","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}]
+            feedbackBox: [{"inputs":[{"internalType":"string","name":"_feedback","type":"string"}],"name":"submitFeedback","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getFeedback","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            wishList: [{"inputs":[{"internalType":"string","name":"_wish","type":"string"}],"name":"addWish","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getWish","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            quizGame: [{"inputs":[{"internalType":"bool","name":"_correct","type":"bool"}],"name":"answer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getScore","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            donationPool: [{"inputs":[],"name":"donate","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"totalDonations","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            profileBadge: [{"inputs":[{"internalType":"string","name":"_badge","type":"string"}],"name":"earnBadge","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getBadge","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}]
         };
 
         async function tip() {
@@ -405,6 +437,58 @@
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
 
+        async function addWish() {
+            const status = document.getElementById("status");
+            status.innerText = "Adding...";
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.wishList, addresses.wishList);
+                await contract.methods.addWish("Wish to build on Base!").send({ from: accounts[0] });
+                status.innerText = "Added! Updating...";
+                updateWish();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function answerQuiz() {
+            const status = document.getElementById("status");
+            status.innerText = "Answering...";
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.quizGame, addresses.quizGame);
+                await contract.methods.answer(true).send({ from: accounts[0] });
+                status.innerText = "Answered! Updating...";
+                updateQuizScore();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function donate() {
+            const status = document.getElementById("status");
+            status.innerText = "Donating...";
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
+                await contract.methods.donate().send({ from: accounts[0], value: web3.utils.toWei('0.0000001', 'ether') });
+                status.innerText = "Donated! Updating...";
+                updateDonationTotal();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function earnBadge() {
+            const status = document.getElementById("status");
+            status.innerText = "Earning...";
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.profileBadge, addresses.profileBadge);
+                await contract.methods.earnBadge("BaseBuilder").send({ from: accounts[0] });
+                status.innerText = "Earned! Updating...";
+                updateBadge();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
         async function updateBalance() {
             const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
             const balance = await contract.methods.getBalance().call();
@@ -490,6 +574,30 @@
             document.getElementById('feedback').innerText = fb;
         }
 
+        async function updateWish() {
+            const contract = new web3.eth.Contract(abis.wishList, addresses.wishList);
+            const wish = await contract.methods.getWish(accounts[0]).call();
+            document.getElementById('wish').innerText = wish;
+        }
+
+        async function updateQuizScore() {
+            const contract = new web3.eth.Contract(abis.quizGame, addresses.quizGame);
+            const score = await contract.methods.getScore().call();
+            document.getElementById('quizScore').innerText = score;
+        }
+
+        async function updateDonationTotal() {
+            const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
+            const total = await contract.methods.totalDonations().call();
+            document.getElementById('donationTotal').innerText = web3.utils.fromWei(total, 'ether');
+        }
+
+        async function updateBadge() {
+            const contract = new web3.eth.Contract(abis.profileBadge, addresses.profileBadge);
+            const badge = await contract.methods.getBadge(accounts[0]).call();
+            document.getElementById('badge').innerText = badge;
+        }
+
         // Initial updates
         (async () => {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -508,6 +616,10 @@
             updateTask();
             updateScore();
             updateFeedback();
+            updateWish();
+            updateQuizScore();
+            updateDonationTotal();
+            updateBadge();
         })();
     </script>
 </body>
