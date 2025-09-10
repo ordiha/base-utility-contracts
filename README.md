@@ -41,6 +41,8 @@ QuizGame contract: 0xd87022114a708067Dec44ae96E46D13a66815420  link: https://bas
 
 DonationPool contract:  0x9FEa4f273da54A5Ed9dC2E95eb5940B59049f3a6 link: https://basescan.org/address/0x9fea4f273da54a5ed9dc2e95eb5940b59049f3a6#code
 
+ProfileBadge contract: 0x38E160E83F7fe08fc33CcEB395f7E1bA490B3D66  link: https://basescan.org/address/0x38e160e83f7fe08fc33cceb395f7e1ba490b3d66#code
+
   - 
   - Front-end: https://glittering-kitten-78d6c7.netlify.app/
   - Note: Only the owner can withdraw funds. Tip with caution as the code is open-source!
