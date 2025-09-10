@@ -35,6 +35,8 @@ Scoreboard contract: 0xdb1A13153F2441e9E220cb88162160DC889DA33b  link: https://b
 
 FeedbackBox contract: 0x106520CcBf8C35df8B6D0c3ab850Bfd39544Aa56  link:https://basescan.org/address/0x106520ccbf8c35df8b6d0c3ab850bfd39544aa56#code
 
+WishList contract: 0x8a5E1BC983B249c7D7a8f8624e53D613e02fA825  link: https://basescan.org/address/0x8a5e1bc983b249c7d7a8f8624e53d613e02fa825#code
+
   - 
   - Front-end: https://glittering-kitten-78d6c7.netlify.app/
   - Note: Only the owner can withdraw funds. Tip with caution as the code is open-source!
