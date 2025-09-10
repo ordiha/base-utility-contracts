@@ -66,7 +66,7 @@
 
         <div class="section">
             <h2>TipJar</h2>
-            <button onclick="tip()">Tip 0.0001 ETH</button>
+            <button onclick="tip()">Tip 0.0000001 ETH</button>
             <p>Balance: <span id="tipBalance"></span> ETH</p>
         </div>
 
@@ -170,7 +170,7 @@
 
         <div class="section">
             <h2>DonationPool</h2>
-            <button onclick="donate()">Donate 0.0001 ETH</button>
+            <button onclick="donate()">Donate 0.0000001 ETH</button>
             <p>Total Donations: <span id="donationTotal"></span> ETH</p>
         </div>
 
@@ -235,7 +235,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
-                await contract.methods.tip().send({ from: accounts[0], value: web3.utils.toWei('0.0001', 'ether') });
+                await contract.methods.tip().send({ from: accounts[0], value: web3.utils.toWei('0.0000001', 'ether') });
                 status.innerText = "Tipped! Updating...";
                 updateBalance();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -470,7 +470,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
-                await contract.methods.donate().send({ from: accounts[0], value: web3.utils.toWei('0.0001', 'ether') });
+                await contract.methods.donate().send({ from: accounts[0], value: web3.utils.toWei('0.0000001', 'ether') });
                 status.innerText = "Donated! Updating...";
                 updateDonationTotal();
             } catch (error) { status.innerText = "Error: " + error.message; }
