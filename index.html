@@ -85,7 +85,13 @@
         <h1>Base Community Tools</h1>
 
         <div class="section">
-            <h2>CommunityPoll</h2>
+            <h2>TipJar</h2>
+            <button onclick="sendTip()">Send Tip (0.000001 ETH)</button>
+            <p>Your Total Tips: <span id="tipAmount"></span> wei</p>
+        </div>
+
+        <div class="section">
+            <h2>VotePoll</h2>
             <select id="voteOption">
                 <option value="true">Yes</option>
                 <option value="false">No</option>
@@ -95,82 +101,66 @@
         </div>
 
         <div class="section">
-            <h2>EventAnnouncer</h2>
-            <button onclick="announceEvent()">Announce Event</button>
+            <h2>MessageBoard</h2>
+            <input type="text" id="messageInput" placeholder="Enter message">
+            <button onclick="sendMessage()">Send Message</button>
+            <p>Last Message: <span id="lastMessage"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>PollResultsViewer</h2>
+            <button onclick="updatePollResultsViewer()">Update Results</button>
+            <p>Total Votes (Poll 0): <span id="totalVotes"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>EventReminder</h2>
+            <button onclick="setReminder()">Set Reminder (Event 0)</button>
             <p>Last Event: <span id="lastEvent"></span></p>
-        </div>
-
-        <div class="section">
-            <h2>RewardDistributor</h2>
-            <button onclick="claimReward()">Claim Reward</button>
-            <p>Your Reward: <span id="rewardAmount"></span> wei</p>
-        </div>
-
-        <div class="section">
-            <h2>MemberDirectory</h2>
-            <button onclick="registerProfile()">Register Profile</button>
-            <p>Your Profile: <span id="profile"></span></p>
-        </div>
-
-        <div class="section">
-            <h2>IdeaBoard</h2>
-            <button onclick="submitIdea()">Submit Idea</button>
-            <button onclick="upvoteIdea()">Upvote Last Idea</button>
-            <p>Last Idea: <span id="lastIdea"></span>, Votes: <span id="ideaVotes"></span></p>
-        </div>
-
-        <div class="section">
-            <h2>ShoutoutHub</h2>
-            <button onclick="sendShoutout()">Send Shoutout (0.001 ETH)</button>
-            <p>Last Shoutout: <span id="lastShoutout"></span> to <span id="shoutoutRecipient"></span></p>
-        </div>
-
-        <div class="section">
-            <h2>SkillShare</h2>
-            <input type="text" id="skillInput" placeholder="Enter skill">
-            <button onclick="addSkill()">Add Skill</button>
-            <p>Your Skills: <span id="skills"></span></p>
-        </div>
-
-        <div class="section">
-            <h2>Leaderboard</h2>
-            <button onclick="addScore()">Add 10 Points</button>
-            <p>Your Score: <span id="score"></span></p>
         </div>
 
         <p id="status"></p>
     </div>
 
     <script>
-        const web3 = new Web3(window.ethereum);
+        const web3 = new Web3(window.ethereum || 'https://mainnet.base.org');
         const addresses = {
-            communityPoll: '0x3153bD07d1e9044C3B0Ed9c2AE53D1c60C49d918',
-            eventAnnouncer: '0x1aC38809d7da7993A020233143eF7700360BC472',
-            rewardDistributor: '0x3b4Fe99Dec582D50d612AAE3ea50fDdDE83B66Ee',
-            memberDirectory: '0x13Fa368d180f91B2341e6389b23AA98320B55195',
-            ideaBoard: '0xDfa01C72686F9C9d8345e0bF52f6750f4D45d1cF',
-            shoutoutHub: '0x3139289c94191c0B47E9D282374Ec22B8Ca57cA1',
-            skillShare: '0xd908e36d467035303CAd9A7e126782b028D35a62',
-            leaderboard: '0x2Ac1Bd56a40F74C4d380572045400378d78b463b'
+            tipJar: '0x62A3536df479317Bd76480F801278867dB1603Ff',
+            votePoll: '0xCb8A9D3E1Bd3Ea1793DED3373CA1CAc1969766A1',
+            messageBoard: '0x716CfE1272Ed90A33050af469A83852bE2Ff9260',
+            pollResultsViewer: '0xeA162AfCbB6ee15b985531756661DA0cf6d8e993',
+            eventReminder: '0x1a96bDbaA512Eb6aEE08D589e1eAb1D9193484Ca'
         };
         const abis = {
-            communityPoll: [{"inputs":[{"internalType":"bool","name":"_yes","type":"bool"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getResults","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
-            eventAnnouncer: [{"inputs":[{"internalType":"string","name":"_eventDetails","type":"string"}],"name":"announceEvent","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getEvent","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
-            rewardDistributor: [{"inputs":[{"internalType":"address","name":"_user","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"distributeReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getReward","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
-            memberDirectory: [{"inputs":[{"internalType":"string","name":"_profile","type":"string"}],"name":"registerProfile","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getProfile","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
-            ideaBoard: [{"inputs":[{"internalType":"string","name":"_idea","type":"string"}],"name":"submitIdea","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"upvoteIdea","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getIdea","outputs":[{"internalType":"string","name":"","type":"string"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
-            shoutoutHub: [{"inputs":[{"internalType":"address","name":"_recipient","type":"address"},{"internalType":"string","name":"_message","type":"string"}],"name":"sendShoutout","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getShoutout","outputs":[{"internalType":"string","name":"","type":"string"},{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}],
-            skillShare: [{"inputs":[{"internalType":"string","name":"_skill","type":"string"}],"name":"addSkill","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getSkills","outputs":[{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"}],
-            leaderboard: [{"inputs":[{"internalType":"uint256","name":"_score","type":"uint256"}],"name":"addScore","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getScore","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]
+            tipJar: [{"inputs":[],"name":"sendTip","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTip","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            votePoll: [{"inputs":[{"internalType":"bool","name":"_yes","type":"bool"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getResults","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            messageBoard: [{"inputs":[{"internalType":"string","name":"_msg","type":"string"}],"name":"sendMessage","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getMessage","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            pollResultsViewer: [{"inputs":[{"internalType":"uint256","name":"_pollId","type":"uint256"}],"name":"updateResults","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pollId","type":"uint256"}],"name":"getTotalVotes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            eventReminder: [{"inputs":[{"internalType":"uint256","name":"_eventId","type":"uint256"}],"name":"setReminder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_eventId","type":"uint256"}],"name":"getEvent","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}]
         };
+
+        async function sendTip() {
+            const status = document.getElementById("status");
+            status.innerText = "Sending...";
+            try {
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
+                await contract.methods.sendTip().send({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether') });
+                status.innerText = "Sent! Updating...";
+                updateTip();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
 
         async function votePoll() {
             const status = document.getElementById("status");
             status.innerText = "Voting...";
             try {
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.communityPoll, addresses.communityPoll);
+                const contract = new web3.eth.Contract(abis.votePoll, addresses.votePoll);
                 const vote = document.getElementById("voteOption").value === "true";
                 await contract.methods.vote(vote).send({ from: accounts[0] });
                 status.innerText = "Voted! Updating...";
@@ -178,175 +168,94 @@
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
 
-        async function announceEvent() {
+        async function sendMessage() {
             const status = document.getElementById("status");
-            status.innerText = "Announcing...";
+            status.innerText = "Sending...";
             try {
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.eventAnnouncer, addresses.eventAnnouncer);
-                await contract.methods.announceEvent("Farcaster meetup Sep 15").send({ from: accounts[0] });
-                status.innerText = "Announced! Updating...";
+                const contract = new web3.eth.Contract(abis.messageBoard, addresses.messageBoard);
+                const message = document.getElementById("messageInput").value;
+                await contract.methods.sendMessage(message).send({ from: accounts[0] });
+                status.innerText = "Sent! Updating...";
+                updateLastMessage();
+                document.getElementById("messageInput").value = ""; // Clear input
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function updatePollResultsViewer() {
+            const status = document.getElementById("status");
+            status.innerText = "Updating...";
+            try {
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.pollResultsViewer, addresses.pollResultsViewer);
+                await contract.methods.updateResults(0).send({ from: accounts[0] });
+                status.innerText = "Updated! Refreshing...";
+                updateTotalVotes();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function setReminder() {
+            const status = document.getElementById("status");
+            status.innerText = "Setting...";
+            try {
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.eventReminder, addresses.eventReminder);
+                await contract.methods.setReminder(0).send({ from: accounts[0] });
+                status.innerText = "Set! Updating...";
                 updateLastEvent();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
 
-        async function claimReward() {
-            const status = document.getElementById("status");
-            status.innerText = "Claiming...";
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.rewardDistributor, addresses.rewardDistributor);
-                await contract.methods.claimReward().send({ from: accounts[0] });
-                status.innerText = "Claimed! Updating...";
-                updateReward();
-            } catch (error) { status.innerText = "Error: " + error.message; }
-        }
-
-        async function registerProfile() {
-            const status = document.getElementById("status");
-            status.innerText = "Registering...";
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.memberDirectory, addresses.memberDirectory);
-                await contract.methods.registerProfile("Dev on Base").send({ from: accounts[0] });
-                status.innerText = "Registered! Updating...";
-                updateProfile();
-            } catch (error) { status.innerText = "Error: " + error.message; }
-        }
-
-        async function submitIdea() {
-            const status = document.getElementById("status");
-            status.innerText = "Submitting...";
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.ideaBoard, addresses.ideaBoard);
-                await contract.methods.submitIdea("Add chat feature").send({ from: accounts[0] });
-                status.innerText = "Submitted! Updating...";
-                updateLastIdea();
-            } catch (error) { status.innerText = "Error: " + error.message; }
-        }
-
-        async function upvoteIdea() {
-            const status = document.getElementById("status");
-            status.innerText = "Upvoting...";
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.ideaBoard, addresses.ideaBoard);
-                await contract.methods.upvoteIdea(0).send({ from: accounts[0] });
-                status.innerText = "Upvoted! Updating...";
-                updateLastIdea();
-            } catch (error) { status.innerText = "Error: " + error.message; }
-        }
-
-        async function sendShoutout() {
-            const status = document.getElementById("status");
-            status.innerText = "Sending...";
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.shoutoutHub, addresses.shoutoutHub);
-                await contract.methods.sendShoutout(accounts[0], "Great work!").send({ from: accounts[0], value: web3.utils.toWei('0.001', 'ether') });
-                status.innerText = "Sent! Updating...";
-                updateLastShoutout();
-            } catch (error) { status.innerText = "Error: " + error.message; }
-        }
-
-        async function addSkill() {
-            const status = document.getElementById("status");
-            status.innerText = "Adding...";
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.skillShare, addresses.skillShare);
-                const skill = document.getElementById("skillInput").value;
-                await contract.methods.addSkill(skill).send({ from: accounts[0] });
-                status.innerText = "Added! Updating...";
-                updateSkills();
-                document.getElementById("skillInput").value = ""; // Clear input
-            } catch (error) { status.innerText = "Error: " + error.message; }
-        }
-
-        async function addScore() {
-            const status = document.getElementById("status");
-            status.innerText = "Adding...";
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.leaderboard, addresses.leaderboard);
-                await contract.methods.addScore(10).send({ from: accounts[0] });
-                status.innerText = "Added! Updating...";
-                updateScore();
-            } catch (error) { status.innerText = "Error: " + error.message; }
+        async function updateTip() {
+            const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
+            const tip = await contract.methods.getTip(accounts[0]).call();
+            document.getElementById('tipAmount').innerText = tip;
         }
 
         async function updatePollResults() {
-            const contract = new web3.eth.Contract(abis.communityPoll, addresses.communityPoll);
+            const contract = new web3.eth.Contract(abis.votePoll, addresses.votePoll);
             const [yes, no] = await contract.methods.getResults().call();
             document.getElementById('yesVotes').innerText = yes;
             document.getElementById('noVotes').innerText = no;
         }
 
+        async function updateLastMessage() {
+            const contract = new web3.eth.Contract(abis.messageBoard, addresses.messageBoard);
+            const message = await contract.methods.getMessage(0).call();
+            document.getElementById('lastMessage').innerText = message;
+        }
+
+        async function updateTotalVotes() {
+            const contract = new web3.eth.Contract(abis.pollResultsViewer, addresses.pollResultsViewer);
+            const total = await contract.methods.getTotalVotes(0).call();
+            document.getElementById('totalVotes').innerText = total;
+        }
+
         async function updateLastEvent() {
-            const contract = new web3.eth.Contract(abis.eventAnnouncer, addresses.eventAnnouncer);
+            const contract = new web3.eth.Contract(abis.eventReminder, addresses.eventReminder);
             const event = await contract.methods.getEvent(0).call();
             document.getElementById('lastEvent').innerText = event;
         }
 
-        async function updateReward() {
-            const contract = new web3.eth.Contract(abis.rewardDistributor, addresses.rewardDistributor);
-            const reward = await contract.methods.getReward(accounts[0]).call();
-            document.getElementById('rewardAmount').innerText = reward;
-        }
-
-        async function updateProfile() {
-            const contract = new web3.eth.Contract(abis.memberDirectory, addresses.memberDirectory);
-            const profile = await contract.methods.getProfile(accounts[0]).call();
-            document.getElementById('profile').innerText = profile;
-        }
-
-        async function updateLastIdea() {
-            const contract = new web3.eth.Contract(abis.ideaBoard, addresses.ideaBoard);
-            const [idea, votes] = await contract.methods.getIdea(0).call();
-            document.getElementById('lastIdea').innerText = idea;
-            document.getElementById('ideaVotes').innerText = votes;
-        }
-
-        async function updateLastShoutout() {
-            const contract = new web3.eth.Contract(abis.shoutoutHub, addresses.shoutoutHub);
-            const [message, recipient] = await contract.methods.getShoutout(0).call();
-            document.getElementById('lastShoutout').innerText = message;
-            document.getElementById('shoutoutRecipient').innerText = recipient;
-        }
-
-        async function updateSkills() {
-            const contract = new web3.eth.Contract(abis.skillShare, addresses.skillShare);
-            const skills = await contract.methods.getSkills(accounts[0]).call();
-            document.getElementById('skills').innerText = skills.join(", ");
-        }
-
-        async function updateScore() {
-            const contract = new web3.eth.Contract(abis.leaderboard, addresses.leaderboard);
-            const score = await contract.methods.getScore(accounts[0]).call();
-            document.getElementById('score').innerText = score;
-        }
-
         // Initial updates
         (async () => {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const accounts = await web3.eth.getAccounts();
-            updatePollResults();
-            updateLastEvent();
-            updateReward();
-            updateProfile();
-            updateLastIdea();
-            updateLastShoutout();
-            updateSkills();
-            updateScore();
+            if (!window.ethereum) {
+                document.getElementById("status").innerText = "Please install MetaMask!";
+            } else {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                updateTip();
+                updatePollResults();
+                updateLastMessage();
+                updateTotalVotes();
+                updateLastEvent();
+            }
         })();
     </script>
 </body>
