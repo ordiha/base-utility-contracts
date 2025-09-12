@@ -5,15 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Base Community Tools</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
   <!-- Header -->
   <header class="bg-blue-600 text-white shadow-md">
     <div class="max-w-6xl mx-auto px-6 py-6 flex justify-between items-center">
       <h1 class="text-2xl font-bold">Base Community Tools</h1>
-      <a href="https://base-community-tools.netlify.app" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium shadow hover:bg-gray-100">
-        Live Frontend
-      </a>
+      <button id="connectBtn" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium shadow hover:bg-gray-100">
+        Connect Wallet
+      </button>
     </div>
   </header>
 
@@ -21,63 +22,102 @@
   <section class="max-w-6xl mx-auto px-6 py-12">
     <h2 class="text-3xl font-bold mb-4">🌐 Open-Source Contracts on Base</h2>
     <p class="text-lg text-gray-600">
-      A collection of composable smart contracts deployed on <a href="https://basescan.org" target="_blank" class="text-blue-600 underline">Base</a>,
-      designed for community interaction, governance, utilities, and on-chain fun.
+      Interact with deployed smart contracts on the <a href="https://base.org" target="_blank" class="text-blue-600 underline">Base</a> network.
+      Connect your wallet to start using the tools directly.
     </p>
   </section>
 
-  <!-- Contracts -->
-  <section class="max-w-6xl mx-auto px-6 py-8 grid md:grid-cols-2 gap-6">
-    <!-- Example card -->
+  <!-- Contracts Grid -->
+  <section class="max-w-6xl mx-auto px-6 py-8 grid md:grid-cols-2 gap-6" id="contractsGrid">
+    <!-- Example Contract Card: TipJar -->
     <div class="bg-white rounded-2xl shadow p-6">
       <h3 class="text-xl font-semibold">💰 TipJar</h3>
-      <p class="text-gray-600 text-sm mb-3">Simple tipping mechanism.</p>
-      <a href="https://basescan.org/address/0x62a3536df479317bd76480f801278867db1603ff#code" target="_blank" class="text-blue-600 font-medium hover:underline">
-        View on BaseScan
-      </a>
+      <p class="text-gray-600 text-sm mb-3">Send a tip directly to the contract.</p>
+      <button onclick="sendTip()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">
+        Send 0.01 ETH Tip
+      </button>
     </div>
 
+    <!-- Example Contract Card: VotePoll -->
     <div class="bg-white rounded-2xl shadow p-6">
       <h3 class="text-xl font-semibold">🗳️ VotePoll</h3>
-      <p class="text-gray-600 text-sm mb-3">Create & manage polls.</p>
-      <a href="https://basescan.org/address/0xcb8a9d3e1bd3ea1793ded3373ca1cac1969766a1#code" target="_blank" class="text-blue-600 font-medium hover:underline">
-        View on BaseScan
-      </a>
+      <p class="text-gray-600 text-sm mb-3">Cast your vote in the poll.</p>
+      <button onclick="castVote(1)" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">
+        Vote Option 1
+      </button>
+      <button onclick="castVote(2)" class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">
+        Vote Option 2
+      </button>
     </div>
 
+    <!-- Example Contract Card: SimpleTimer -->
     <div class="bg-white rounded-2xl shadow p-6">
       <h3 class="text-xl font-semibold">⏱️ SimpleTimer</h3>
-      <p class="text-gray-600 text-sm mb-3">Time-based helper contract.</p>
-      <a href="https://basescan.org/address/0xc1949249093af2d0aab8a2d2b241e0b828171de7#code" target="_blank" class="text-blue-600 font-medium hover:underline">
-        View on BaseScan
-      </a>
+      <p class="text-gray-600 text-sm mb-3">Start a timer.</p>
+      <button onclick="startTimer()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">
+        Start Timer
+      </button>
     </div>
-
-    <div class="bg-white rounded-2xl shadow p-6">
-      <h3 class="text-xl font-semibold">🎁 GiveawayBox</h3>
-      <p class="text-gray-600 text-sm mb-3">Randomized giveaway distribution.</p>
-      <a href="https://basescan.org/address/0xea23ec1b0ff0316d8fed21f26e86af422fbd6e63#code" target="_blank" class="text-blue-600 font-medium hover:underline">
-        View on BaseScan
-      </a>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow p-6">
-      <h3 class="text-xl font-semibold">📜 MessageBoard</h3>
-      <p class="text-gray-600 text-sm mb-3">Public bulletin/message board.</p>
-      <a href="https://basescan.org/address/0x716cfe1272ed90a33050af469a83852be2ff9260#code" target="_blank" class="text-blue-600 font-medium hover:underline">
-        View on BaseScan
-      </a>
-    </div>
-
-    <!-- Add the rest of your contracts in the same card style -->
   </section>
 
   <!-- Footer -->
   <footer class="bg-gray-100 mt-12 py-6">
     <div class="max-w-6xl mx-auto px-6 text-center text-gray-600">
       Built with ❤️ for the Base ecosystem. <br />
-      <span class="text-sm">Open-source repo: <a href="https://github.com/your-repo-link" class="text-blue-600 hover:underline">GitHub</a></span>
+      <span class="text-sm">Open-source repo on GitHub.</span>
     </div>
   </footer>
+
+  <!-- Script Section -->
+  <script>
+    let provider, signer;
+
+    // Connect wallet
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert("MetaMask not found! Please install it.");
+        return;
+      }
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = provider.getSigner();
+      document.getElementById("connectBtn").innerText = "Wallet Connected";
+    }
+    document.getElementById("connectBtn").onclick = connectWallet;
+
+    // Contract Addresses
+    const tipJarAddress = "0x62A3536df479317Bd76480F801278867dB1603Ff";
+    const votePollAddress = "0xCb8A9D3E1Bd3Ea1793DED3373CA1CAc1969766A1";
+    const simpleTimerAddress = "0xC1949249093af2d0aaB8a2D2B241e0B828171DE7";
+
+    // Minimal ABIs
+    const tipJarAbi = ["function deposit() payable"];
+    const votePollAbi = ["function vote(uint256 option)"];
+    const timerAbi = ["function startTimer()"];
+
+    // Send Tip
+    async function sendTip() {
+      const contract = new ethers.Contract(tipJarAddress, tipJarAbi, signer);
+      const tx = await contract.deposit({ value: ethers.utils.parseEther("0.01") });
+      await tx.wait();
+      alert("Tip sent!");
+    }
+
+    // Cast Vote
+    async function castVote(option) {
+      const contract = new ethers.Contract(votePollAddress, votePollAbi, signer);
+      const tx = await contract.vote(option);
+      await tx.wait();
+      alert("Vote submitted!");
+    }
+
+    // Start Timer
+    async function startTimer() {
+      const contract = new ethers.Contract(simpleTimerAddress, timerAbi, signer);
+      const tx = await contract.startTimer();
+      await tx.wait();
+      alert("Timer started!");
+    }
+  </script>
 </body>
 </html>
