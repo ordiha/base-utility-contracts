@@ -85,6 +85,12 @@
         <h1>Base Utility Tools</h1>
 
         <div class="section">
+            <h2>SimpleTimer</h2>
+            <button onclick="startTimer()">Start Timer</button>
+            <p>Timer Status: <span id="timerStatus"></span></p>
+        </div>
+
+        <div class="section">
             <h2>TipJar</h2>
             <button onclick="sendTip()">Send Tip (0.000001 ETH)</button>
             <p>Your Total Tips: <span id="tipAmount"></span> wei</p>
@@ -98,12 +104,6 @@
             </select>
             <button onclick="votePoll()">Vote</button>
             <p>Results: Yes <span id="yesVotes"></span>, No <span id="noVotes"></span></p>
-        </div>
-
-        <div class="section">
-            <h2>SimpleTimer</h2>
-            <button onclick="startTimer()">Start Timer</button>
-            <p>Timer Status: <span id="timerStatus"></span></p>
         </div>
 
         <div class="section">
@@ -226,9 +226,9 @@
     <script>
         const web3 = new Web3(window.ethereum || 'https://mainnet.base.org');
         const addresses = {
+            simpleTimer: '0xC1949249093af2d0aaB8a2D2B241e0B828171DE7',
             tipJar: '0x62A3536df479317Bd76480F801278867dB1603Ff',
             votePoll: '0xCb8A9D3E1Bd3Ea1793DED3373CA1CAc1969766A1',
-            simpleTimer: '0xC1949249093af2d0aaB8a2D2B241e0B828171DE7',
             giveawayBox: '0xea23EC1b0fF0316D8FeD21f26E86aF422fbd6e63',
             messageBoard: '0x716CfE1272Ed90A33050af469A83852bE2Ff9260',
             counter: '0x4e42F24592c5F44D8B7E550253A21d14EFF69d29',
@@ -249,9 +249,9 @@
             eventReminder: '0x1a96bDbaA512Eb6aEE08D589e1eAb1D9193484Ca'
         };
         const abis = {
+            simpleTimer: [{"inputs":[],"name":"startTimer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getStatus","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],
             tipJar: [{"inputs":[],"name":"sendTip","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTip","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
             votePoll: [{"inputs":[{"internalType":"bool","name":"_yes","type":"bool"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getResults","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
-            simpleTimer: [{"inputs":[],"name":"startTimer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getStatus","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],
             giveawayBox: [{"inputs":[],"name":"claimGiveaway","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getLastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}],
             messageBoard: [{"inputs":[{"internalType":"string","name":"_msg","type":"string"}],"name":"sendMessage","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getMessage","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
             counter: [{"inputs":[],"name":"increment","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
@@ -272,36 +272,7 @@
             eventReminder: [{"inputs":[{"internalType":"uint256","name":"_eventId","type":"uint256"}],"name":"setReminder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_eventId","type":"uint256"}],"name":"getEvent","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}]
         };
 
-        async function sendTip() {
-            const status = document.getElementById("status");
-            status.innerText = "Sending...";
-            try {
-                await checkNetwork();
-                if (!window.ethereum) throw new Error("Please install MetaMask!");
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
-                await contract.methods.sendTip().send({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether') });
-                status.innerText = "Sent! Updating...";
-                updateTip();
-            } catch (error) { status.innerText = "Error: " + error.message; }
-        }
-
-        async function votePoll() {
-            const status = document.getElementById("status");
-            status.innerText = "Voting...";
-            try {
-                await checkNetwork();
-                if (!window.ethereum) throw new Error("Please install MetaMask!");
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const contract = new web3.eth.Contract(abis.votePoll, addresses.votePoll);
-                const vote = document.getElementById("voteOption").value === "true";
-                await contract.methods.vote(vote).send({ from: accounts[0] });
-                status.innerText = "Voted! Updating...";
-                updatePollResults();
-            } catch (error) { status.innerText = "Error: " + error.message; }
-        }
+        let timerStarted = false;
 
         async function startTimer() {
             const status = document.getElementById("status");
@@ -314,12 +285,56 @@
                 const contract = new web3.eth.Contract(abis.simpleTimer, addresses.simpleTimer);
                 await contract.methods.startTimer().send({ from: accounts[0] });
                 status.innerText = "Started! Updating...";
+                timerStarted = true;
                 updateTimerStatus();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function sendTip() {
+            const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
+            status.innerText = "Sending...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
+                await contract.methods.sendTip().send({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether'), gas: 100000 });
+                status.innerText = "Sent! Updating...";
+                updateTip();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function votePoll() {
+            const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
+            status.innerText = "Voting...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.votePoll, addresses.votePoll);
+                const vote = document.getElementById("voteOption").value === "true";
+                await contract.methods.vote(vote).send({ from: accounts[0], gas: 100000 });
+                status.innerText = "Voted! Updating...";
+                updatePollResults();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
 
         async function claimGiveaway() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Claiming...";
             try {
                 await checkNetwork();
@@ -327,7 +342,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.giveawayBox, addresses.giveawayBox);
-                await contract.methods.claimGiveaway().send({ from: accounts[0] });
+                await contract.methods.claimGiveaway().send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Claimed! Updating...";
                 updateLastWinner();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -335,6 +350,10 @@
 
         async function sendMessage() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Sending...";
             try {
                 await checkNetwork();
@@ -343,7 +362,7 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.messageBoard, addresses.messageBoard);
                 const message = document.getElementById("messageInput").value;
-                await contract.methods.sendMessage(message).send({ from: accounts[0] });
+                await contract.methods.sendMessage(message).send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Sent! Updating...";
                 updateLastMessage();
                 document.getElementById("messageInput").value = ""; // Clear input
@@ -352,6 +371,10 @@
 
         async function incrementCounter() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Incrementing...";
             try {
                 await checkNetwork();
@@ -359,7 +382,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.counter, addresses.counter);
-                await contract.methods.increment().send({ from: accounts[0] });
+                await contract.methods.increment().send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Incremented! Updating...";
                 updateCounterValue();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -367,6 +390,10 @@
 
         async function storeData() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Storing...";
             try {
                 await checkNetwork();
@@ -375,7 +402,7 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.storageunit, addresses.storageunit);
                 const data = document.getElementById("storeInput").value;
-                await contract.methods.store(data).send({ from: accounts[0] });
+                await contract.methods.store(data).send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Stored! Updating...";
                 updateStoredData();
                 document.getElementById("storeInput").value = ""; // Clear input
@@ -384,6 +411,10 @@
 
         async function pickRandom() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Picking...";
             try {
                 await checkNetwork();
@@ -397,6 +428,10 @@
 
         async function sendGreeting() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Sending...";
             try {
                 await checkNetwork();
@@ -405,7 +440,7 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.greetingcard, addresses.greetingcard);
                 const greeting = document.getElementById("greetingInput").value;
-                await contract.methods.sendGreeting(greeting).send({ from: accounts[0] });
+                await contract.methods.sendGreeting(greeting).send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Sent! Updating...";
                 updateLastGreeting();
                 document.getElementById("greetingInput").value = ""; // Clear input
@@ -414,6 +449,10 @@
 
         async function trackToken() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Tracking...";
             try {
                 await checkNetwork();
@@ -421,7 +460,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.tokentracker, addresses.tokentracker);
-                await contract.methods.trackToken('0xYourTokenAddress').send({ from: accounts[0] });
+                await contract.methods.trackToken('0xYourTokenAddress').send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Tracked! Updating...";
                 updateTokenBalance();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -429,6 +468,10 @@
 
         async function trackEvent() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Tracking...";
             try {
                 await checkNetwork();
@@ -436,7 +479,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.eventTracker, addresses.eventTracker);
-                await contract.methods.trackEvent(0).send({ from: accounts[0] });
+                await contract.methods.trackEvent(0).send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Tracked! Updating...";
                 updateLastTrackedEvent();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -444,6 +487,10 @@
 
         async function checkPrice() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Checking...";
             try {
                 await checkNetwork();
@@ -457,6 +504,10 @@
 
         async function addTask() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Adding...";
             try {
                 await checkNetwork();
@@ -465,7 +516,7 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.todoList, addresses.todoList);
                 const task = document.getElementById("todoInput").value;
-                await contract.methods.addTask(task).send({ from: accounts[0] });
+                await contract.methods.addTask(task).send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Added! Updating...";
                 updateLastTask();
                 document.getElementById("todoInput").value = ""; // Clear input
@@ -474,6 +525,10 @@
 
         async function addScore() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Adding...";
             try {
                 await checkNetwork();
@@ -481,7 +536,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.scoreboard, addresses.scoreboard);
-                await contract.methods.addScore().send({ from: accounts[0] });
+                await contract.methods.addScore().send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Added! Updating...";
                 updateYourScore();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -489,6 +544,10 @@
 
         async function sendFeedback() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Sending...";
             try {
                 await checkNetwork();
@@ -497,7 +556,7 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.feedbackBox, addresses.feedbackBox);
                 const feedback = document.getElementById("feedbackInput").value;
-                await contract.methods.sendFeedback(feedback).send({ from: accounts[0] });
+                await contract.methods.sendFeedback(feedback).send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Sent! Updating...";
                 updateLastFeedback();
                 document.getElementById("feedbackInput").value = ""; // Clear input
@@ -506,6 +565,10 @@
 
         async function addWish() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Adding...";
             try {
                 await checkNetwork();
@@ -514,7 +577,7 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.wishList, addresses.wishList);
                 const wish = document.getElementById("wishInput").value;
-                await contract.methods.addWish(wish).send({ from: accounts[0] });
+                await contract.methods.addWish(wish).send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Added! Updating...";
                 updateLastWish();
                 document.getElementById("wishInput").value = ""; // Clear input
@@ -523,6 +586,10 @@
 
         async function submitAnswer() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Submitting...";
             try {
                 await checkNetwork();
@@ -530,7 +597,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.quizGame, addresses.quizGame);
-                await contract.methods.submitAnswer(true).send({ from: accounts[0] });
+                await contract.methods.submitAnswer(true).send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Submitted! Updating...";
                 updateQuizScore();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -538,6 +605,10 @@
 
         async function donate() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Donating...";
             try {
                 await checkNetwork();
@@ -545,7 +616,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
-                await contract.methods.donate().send({ from: accounts[0], value: web3.utils.toWei('0.001', 'ether') });
+                await contract.methods.donate().send({ from: accounts[0], value: web3.utils.toWei('0.001', 'ether'), gas: 100000 });
                 status.innerText = "Donated! Updating...";
                 updateTotalDonated();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -553,6 +624,10 @@
 
         async function claimBadge() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Claiming...";
             try {
                 await checkNetwork();
@@ -560,7 +635,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.profileBadge, addresses.profileBadge);
-                await contract.methods.claimBadge().send({ from: accounts[0] });
+                await contract.methods.claimBadge().send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Claimed! Updating...";
                 updateBadgeStatus();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -568,6 +643,10 @@
 
         async function updatePollResultsViewer() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Updating...";
             try {
                 await checkNetwork();
@@ -575,7 +654,7 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.pollResultsViewer, addresses.pollResultsViewer);
-                await contract.methods.updateResults(0).send({ from: accounts[0] });
+                await contract.methods.updateResults(0).send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Updated! Refreshing...";
                 updateTotalVotes();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -583,6 +662,10 @@
 
         async function setReminder() {
             const status = document.getElementById("status");
+            if (!timerStarted) {
+                status.innerText = "Please start SimpleTimer first!";
+                return;
+            }
             status.innerText = "Setting...";
             try {
                 await checkNetwork();
@@ -590,10 +673,17 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.eventReminder, addresses.eventReminder);
-                await contract.methods.setReminder(0).send({ from: accounts[0] });
+                await contract.methods.setReminder(0).send({ from: accounts[0], gas: 100000 });
                 status.innerText = "Set! Updating...";
                 updateLastEvent();
             } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function updateTimerStatus() {
+            const contract = new web3.eth.Contract(abis.simpleTimer, addresses.simpleTimer);
+            const status = await contract.methods.getStatus().call();
+            document.getElementById('timerStatus').innerText = status ? "Active" : "Inactive";
+            timerStarted = status; // Sync state
         }
 
         async function updateTip() {
@@ -607,12 +697,6 @@
             const [yes, no] = await contract.methods.getResults().call();
             document.getElementById('yesVotes').innerText = yes;
             document.getElementById('noVotes').innerText = no;
-        }
-
-        async function updateTimerStatus() {
-            const contract = new web3.eth.Contract(abis.simpleTimer, addresses.simpleTimer);
-            const status = await contract.methods.getStatus().call();
-            document.getElementById('timerStatus').innerText = status ? "Active" : "Inactive";
         }
 
         async function updateLastWinner() {
@@ -639,6 +723,12 @@
             document.getElementById('storedData').innerText = data;
         }
 
+        async function updateRandomValue() {
+            const contract = new web3.eth.Contract(abis.randompicker, addresses.randompicker);
+            const value = await contract.methods.pickRandom().call();
+            document.getElementById('randomValue').innerText = value;
+        }
+
         async function updateLastGreeting() {
             const contract = new web3.eth.Contract(abis.greetingcard, addresses.greetingcard);
             const greeting = await contract.methods.getGreeting(0).call();
@@ -655,6 +745,12 @@
             const contract = new web3.eth.Contract(abis.eventTracker, addresses.eventTracker);
             const event = await contract.methods.getEvent(0).call();
             document.getElementById('lastTrackedEvent').innerText = event;
+        }
+
+        async function updateCurrentPrice() {
+            const contract = new web3.eth.Contract(abis.priceChecker, addresses.priceChecker);
+            const price = await contract.methods.checkPrice().call();
+            document.getElementById('currentPrice').innerText = web3.utils.fromWei(price, 'ether');
         }
 
         async function updateLastTask() {
@@ -738,9 +834,9 @@
                 await checkNetwork();
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
+                updateTimerStatus();
                 updateTip();
                 updatePollResults();
-                updateTimerStatus();
                 updateLastWinner();
                 updateLastMessage();
                 updateCounterValue();
