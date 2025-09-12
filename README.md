@@ -1,5 +1,8 @@
 # Base Utility Contracts
 
+  - Front-end: https://idyllic-quokka-10d37e.netlify.app/
+  - Note: Only the owner can withdraw funds. Tip with caution as the code is open-source!
+
 This repository contains smart contracts deployed on the Base network to enhance user experience, part of the Base Builders.
 
 ## Deployed Contracts
@@ -43,9 +46,6 @@ DonationPool contract:  0x9FEa4f273da54A5Ed9dC2E95eb5940B59049f3a6 link: https:/
 
 ProfileBadge contract: 0x38E160E83F7fe08fc33CcEB395f7E1bA490B3D66  link: https://basescan.org/address/0x38e160e83f7fe08fc33cceb395f7e1ba490b3d66#code
 
-  - 
-  - Front-end: https://glittering-kitten-78d6c7.netlify.app/
-  - Note: Only the owner can withdraw funds. Tip with caution as the code is open-source!
 
 ## Features
 - Tip small amounts to support the project.
