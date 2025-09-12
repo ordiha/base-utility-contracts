@@ -101,10 +101,111 @@
         </div>
 
         <div class="section">
+            <h2>SimpleTimer</h2>
+            <button onclick="startTimer()">Start Timer</button>
+            <p>Timer Status: <span id="timerStatus"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>GiveawayBox</h2>
+            <button onclick="claimGiveaway()">Claim Giveaway</button>
+            <p>Last Winner: <span id="lastWinner"></span></p>
+        </div>
+
+        <div class="section">
             <h2>MessageBoard</h2>
             <input type="text" id="messageInput" placeholder="Enter message">
             <button onclick="sendMessage()">Send Message</button>
             <p>Last Message: <span id="lastMessage"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>Counter</h2>
+            <button onclick="incrementCounter()">Increment</button>
+            <p>Count: <span id="counterValue"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>Storageunit</h2>
+            <input type="text" id="storeInput" placeholder="Data to store">
+            <button onclick="storeData()">Store</button>
+            <p>Stored Data: <span id="storedData"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>Randompicker</h2>
+            <button onclick="pickRandom()">Pick Random</button>
+            <p>Random Value: <span id="randomValue"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>Greetingcard</h2>
+            <input type="text" id="greetingInput" placeholder="Enter greeting">
+            <button onclick="sendGreeting()">Send Greeting</button>
+            <p>Last Greeting: <span id="lastGreeting"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>Tokentracker</h2>
+            <button onclick="trackToken()">Track Token</button>
+            <p>Token Balance: <span id="tokenBalance"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>EventTracker</h2>
+            <button onclick="trackEvent()">Track Event</button>
+            <p>Last Event: <span id="lastTrackedEvent"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>PriceChecker</h2>
+            <button onclick="checkPrice()">Check Price</button>
+            <p>Current Price: <span id="currentPrice"></span> ETH</p>
+        </div>
+
+        <div class="section">
+            <h2>TodoList</h2>
+            <input type="text" id="todoInput" placeholder="Enter task">
+            <button onclick="addTask()">Add Task</button>
+            <p>Last Task: <span id="lastTask"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>Scoreboard</h2>
+            <button onclick="addScore()">Add Score</button>
+            <p>Your Score: <span id="yourScore"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>FeedbackBox</h2>
+            <input type="text" id="feedbackInput" placeholder="Enter feedback">
+            <button onclick="sendFeedback()">Send Feedback</button>
+            <p>Last Feedback: <span id="lastFeedback"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>WishList</h2>
+            <input type="text" id="wishInput" placeholder="Enter wish">
+            <button onclick="addWish()">Add Wish</button>
+            <p>Last Wish: <span id="lastWish"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>QuizGame</h2>
+            <button onclick="submitAnswer()">Submit Answer</button>
+            <p>Score: <span id="quizScore"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>DonationPool</h2>
+            <button onclick="donate()">Donate (0.001 ETH)</button>
+            <p>Total Donated: <span id="totalDonated"></span> wei</p>
+        </div>
+
+        <div class="section">
+            <h2>ProfileBadge</h2>
+            <button onclick="claimBadge()">Claim Badge</button>
+            <p>Badge Status: <span id="badgeStatus"></span></p>
         </div>
 
         <div class="section">
@@ -127,14 +228,46 @@
         const addresses = {
             tipJar: '0x62A3536df479317Bd76480F801278867dB1603Ff',
             votePoll: '0xCb8A9D3E1Bd3Ea1793DED3373CA1CAc1969766A1',
+            simpleTimer: '0xC1949249093af2d0aaB8a2D2B241e0B828171DE7',
+            giveawayBox: '0xea23EC1b0fF0316D8FeD21f26E86aF422fbd6e63',
             messageBoard: '0x716CfE1272Ed90A33050af469A83852bE2Ff9260',
+            counter: '0x4e42F24592c5F44D8B7E550253A21d14EFF69d29',
+            storageunit: '0x02FB8E219ac0E544B4E107Ab8B89a4Ce335F2A05',
+            randompicker: '0xA178dF985feAa35c60DCEe330dD0F5F5a26eE1Ea',
+            greetingcard: '0x95178C466682ae7482AFeF6c9A32e95C826c4Ecd',
+            tokentracker: '0xA54E4190e9579055dF42B4DD5c2a92F9A2A7903e',
+            eventTracker: '0x176036Ec2525208FD1c219d85D440B394Dc939ec',
+            priceChecker: '0x3eD3151Ea8B0D7D210feB46d4880E352bC77E97b',
+            todoList: '0xF047e5B232e87386b114AeEDcF0AEfB8090e064f',
+            scoreboard: '0xdb1A13153F2441e9E220cb88162160DC889DA33b',
+            feedbackBox: '0x106520CcBf8C35df8B6D0c3ab850Bfd39544Aa56',
+            wishList: '0x8a5E1BC983B249c7D7a8f8624e53D613e02fA825',
+            quizGame: '0xd87022114a708067Dec44ae96E46D13a66815420',
+            donationPool: '0x9FEa4f273da54A5Ed9dC2E95eb5940B59049f3a6',
+            profileBadge: '0x38E160E83F7fe08fc33CcEB395f7E1bA490B3D66',
             pollResultsViewer: '0xeA162AfCbB6ee15b985531756661DA0cf6d8e993',
             eventReminder: '0x1a96bDbaA512Eb6aEE08D589e1eAb1D9193484Ca'
         };
         const abis = {
             tipJar: [{"inputs":[],"name":"sendTip","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTip","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
             votePoll: [{"inputs":[{"internalType":"bool","name":"_yes","type":"bool"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getResults","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            simpleTimer: [{"inputs":[],"name":"startTimer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getStatus","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],
+            giveawayBox: [{"inputs":[],"name":"claimGiveaway","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getLastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}],
             messageBoard: [{"inputs":[{"internalType":"string","name":"_msg","type":"string"}],"name":"sendMessage","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getMessage","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            counter: [{"inputs":[],"name":"increment","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            storageunit: [{"inputs":[{"internalType":"string","name":"_data","type":"string"}],"name":"store","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getData","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            randompicker: [{"inputs":[],"name":"pickRandom","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            greetingcard: [{"inputs":[{"internalType":"string","name":"_greeting","type":"string"}],"name":"sendGreeting","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getGreeting","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            tokentracker: [{"inputs":[{"internalType":"address","name":"_token","type":"address"}],"name":"trackToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            eventTracker: [{"inputs":[{"internalType":"uint256","name":"_eventId","type":"uint256"}],"name":"trackEvent","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getEvent","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            priceChecker: [{"inputs":[],"name":"checkPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            todoList: [{"inputs":[{"internalType":"string","name":"_task","type":"string"}],"name":"addTask","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getTask","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            scoreboard: [{"inputs":[],"name":"addScore","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getScore","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            feedbackBox: [{"inputs":[{"internalType":"string","name":"_feedback","type":"string"}],"name":"sendFeedback","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getFeedback","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            wishList: [{"inputs":[{"internalType":"string","name":"_wish","type":"string"}],"name":"addWish","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getWish","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            quizGame: [{"inputs":[{"internalType":"bool","name":"_answer","type":"bool"}],"name":"submitAnswer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getScore","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            donationPool: [{"inputs":[],"name":"donate","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"getTotalDonated","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            profileBadge: [{"inputs":[],"name":"claimBadge","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getBadgeStatus","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],
             pollResultsViewer: [{"inputs":[{"internalType":"uint256","name":"_pollId","type":"uint256"}],"name":"updateResults","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_pollId","type":"uint256"}],"name":"getTotalVotes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
             eventReminder: [{"inputs":[{"internalType":"uint256","name":"_eventId","type":"uint256"}],"name":"setReminder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_eventId","type":"uint256"}],"name":"getEvent","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}]
         };
@@ -170,6 +303,36 @@
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
 
+        async function startTimer() {
+            const status = document.getElementById("status");
+            status.innerText = "Starting...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.simpleTimer, addresses.simpleTimer);
+                await contract.methods.startTimer().send({ from: accounts[0] });
+                status.innerText = "Started! Updating...";
+                updateTimerStatus();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function claimGiveaway() {
+            const status = document.getElementById("status");
+            status.innerText = "Claiming...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.giveawayBox, addresses.giveawayBox);
+                await contract.methods.claimGiveaway().send({ from: accounts[0] });
+                status.innerText = "Claimed! Updating...";
+                updateLastWinner();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
         async function sendMessage() {
             const status = document.getElementById("status");
             status.innerText = "Sending...";
@@ -184,6 +347,222 @@
                 status.innerText = "Sent! Updating...";
                 updateLastMessage();
                 document.getElementById("messageInput").value = ""; // Clear input
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function incrementCounter() {
+            const status = document.getElementById("status");
+            status.innerText = "Incrementing...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.counter, addresses.counter);
+                await contract.methods.increment().send({ from: accounts[0] });
+                status.innerText = "Incremented! Updating...";
+                updateCounterValue();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function storeData() {
+            const status = document.getElementById("status");
+            status.innerText = "Storing...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.storageunit, addresses.storageunit);
+                const data = document.getElementById("storeInput").value;
+                await contract.methods.store(data).send({ from: accounts[0] });
+                status.innerText = "Stored! Updating...";
+                updateStoredData();
+                document.getElementById("storeInput").value = ""; // Clear input
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function pickRandom() {
+            const status = document.getElementById("status");
+            status.innerText = "Picking...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                const contract = new web3.eth.Contract(abis.randompicker, addresses.randompicker);
+                const value = await contract.methods.pickRandom().call();
+                document.getElementById('randomValue').innerText = value;
+                status.innerText = "Picked!";
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function sendGreeting() {
+            const status = document.getElementById("status");
+            status.innerText = "Sending...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.greetingcard, addresses.greetingcard);
+                const greeting = document.getElementById("greetingInput").value;
+                await contract.methods.sendGreeting(greeting).send({ from: accounts[0] });
+                status.innerText = "Sent! Updating...";
+                updateLastGreeting();
+                document.getElementById("greetingInput").value = ""; // Clear input
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function trackToken() {
+            const status = document.getElementById("status");
+            status.innerText = "Tracking...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.tokentracker, addresses.tokentracker);
+                await contract.methods.trackToken('0xYourTokenAddress').send({ from: accounts[0] });
+                status.innerText = "Tracked! Updating...";
+                updateTokenBalance();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function trackEvent() {
+            const status = document.getElementById("status");
+            status.innerText = "Tracking...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.eventTracker, addresses.eventTracker);
+                await contract.methods.trackEvent(0).send({ from: accounts[0] });
+                status.innerText = "Tracked! Updating...";
+                updateLastTrackedEvent();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function checkPrice() {
+            const status = document.getElementById("status");
+            status.innerText = "Checking...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                const contract = new web3.eth.Contract(abis.priceChecker, addresses.priceChecker);
+                const price = await contract.methods.checkPrice().call();
+                document.getElementById('currentPrice').innerText = web3.utils.fromWei(price, 'ether');
+                status.innerText = "Checked!";
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function addTask() {
+            const status = document.getElementById("status");
+            status.innerText = "Adding...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.todoList, addresses.todoList);
+                const task = document.getElementById("todoInput").value;
+                await contract.methods.addTask(task).send({ from: accounts[0] });
+                status.innerText = "Added! Updating...";
+                updateLastTask();
+                document.getElementById("todoInput").value = ""; // Clear input
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function addScore() {
+            const status = document.getElementById("status");
+            status.innerText = "Adding...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.scoreboard, addresses.scoreboard);
+                await contract.methods.addScore().send({ from: accounts[0] });
+                status.innerText = "Added! Updating...";
+                updateYourScore();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function sendFeedback() {
+            const status = document.getElementById("status");
+            status.innerText = "Sending...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.feedbackBox, addresses.feedbackBox);
+                const feedback = document.getElementById("feedbackInput").value;
+                await contract.methods.sendFeedback(feedback).send({ from: accounts[0] });
+                status.innerText = "Sent! Updating...";
+                updateLastFeedback();
+                document.getElementById("feedbackInput").value = ""; // Clear input
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function addWish() {
+            const status = document.getElementById("status");
+            status.innerText = "Adding...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.wishList, addresses.wishList);
+                const wish = document.getElementById("wishInput").value;
+                await contract.methods.addWish(wish).send({ from: accounts[0] });
+                status.innerText = "Added! Updating...";
+                updateLastWish();
+                document.getElementById("wishInput").value = ""; // Clear input
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function submitAnswer() {
+            const status = document.getElementById("status");
+            status.innerText = "Submitting...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.quizGame, addresses.quizGame);
+                await contract.methods.submitAnswer(true).send({ from: accounts[0] });
+                status.innerText = "Submitted! Updating...";
+                updateQuizScore();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function donate() {
+            const status = document.getElementById("status");
+            status.innerText = "Donating...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
+                await contract.methods.donate().send({ from: accounts[0], value: web3.utils.toWei('0.001', 'ether') });
+                status.innerText = "Donated! Updating...";
+                updateTotalDonated();
+            } catch (error) { status.innerText = "Error: " + error.message; }
+        }
+
+        async function claimBadge() {
+            const status = document.getElementById("status");
+            status.innerText = "Claiming...";
+            try {
+                await checkNetwork();
+                if (!window.ethereum) throw new Error("Please install MetaMask!");
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const contract = new web3.eth.Contract(abis.profileBadge, addresses.profileBadge);
+                await contract.methods.claimBadge().send({ from: accounts[0] });
+                status.innerText = "Claimed! Updating...";
+                updateBadgeStatus();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
 
@@ -230,10 +609,94 @@
             document.getElementById('noVotes').innerText = no;
         }
 
+        async function updateTimerStatus() {
+            const contract = new web3.eth.Contract(abis.simpleTimer, addresses.simpleTimer);
+            const status = await contract.methods.getStatus().call();
+            document.getElementById('timerStatus').innerText = status ? "Active" : "Inactive";
+        }
+
+        async function updateLastWinner() {
+            const contract = new web3.eth.Contract(abis.giveawayBox, addresses.giveawayBox);
+            const winner = await contract.methods.getLastWinner().call();
+            document.getElementById('lastWinner').innerText = winner;
+        }
+
         async function updateLastMessage() {
             const contract = new web3.eth.Contract(abis.messageBoard, addresses.messageBoard);
             const message = await contract.methods.getMessage(0).call();
             document.getElementById('lastMessage').innerText = message;
+        }
+
+        async function updateCounterValue() {
+            const contract = new web3.eth.Contract(abis.counter, addresses.counter);
+            const count = await contract.methods.getCount().call();
+            document.getElementById('counterValue').innerText = count;
+        }
+
+        async function updateStoredData() {
+            const contract = new web3.eth.Contract(abis.storageunit, addresses.storageunit);
+            const data = await contract.methods.getData().call();
+            document.getElementById('storedData').innerText = data;
+        }
+
+        async function updateLastGreeting() {
+            const contract = new web3.eth.Contract(abis.greetingcard, addresses.greetingcard);
+            const greeting = await contract.methods.getGreeting(0).call();
+            document.getElementById('lastGreeting').innerText = greeting;
+        }
+
+        async function updateTokenBalance() {
+            const contract = new web3.eth.Contract(abis.tokentracker, addresses.tokentracker);
+            const balance = await contract.methods.getBalance(accounts[0]).call();
+            document.getElementById('tokenBalance').innerText = balance;
+        }
+
+        async function updateLastTrackedEvent() {
+            const contract = new web3.eth.Contract(abis.eventTracker, addresses.eventTracker);
+            const event = await contract.methods.getEvent(0).call();
+            document.getElementById('lastTrackedEvent').innerText = event;
+        }
+
+        async function updateLastTask() {
+            const contract = new web3.eth.Contract(abis.todoList, addresses.todoList);
+            const task = await contract.methods.getTask(0).call();
+            document.getElementById('lastTask').innerText = task;
+        }
+
+        async function updateYourScore() {
+            const contract = new web3.eth.Contract(abis.scoreboard, addresses.scoreboard);
+            const score = await contract.methods.getScore(accounts[0]).call();
+            document.getElementById('yourScore').innerText = score;
+        }
+
+        async function updateLastFeedback() {
+            const contract = new web3.eth.Contract(abis.feedbackBox, addresses.feedbackBox);
+            const feedback = await contract.methods.getFeedback(0).call();
+            document.getElementById('lastFeedback').innerText = feedback;
+        }
+
+        async function updateLastWish() {
+            const contract = new web3.eth.Contract(abis.wishList, addresses.wishList);
+            const wish = await contract.methods.getWish(0).call();
+            document.getElementById('lastWish').innerText = wish;
+        }
+
+        async function updateQuizScore() {
+            const contract = new web3.eth.Contract(abis.quizGame, addresses.quizGame);
+            const score = await contract.methods.getScore(accounts[0]).call();
+            document.getElementById('quizScore').innerText = score;
+        }
+
+        async function updateTotalDonated() {
+            const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
+            const total = await contract.methods.getTotalDonated().call();
+            document.getElementById('totalDonated').innerText = total;
+        }
+
+        async function updateBadgeStatus() {
+            const contract = new web3.eth.Contract(abis.profileBadge, addresses.profileBadge);
+            const status = await contract.methods.getBadgeStatus(accounts[0]).call();
+            document.getElementById('badgeStatus').innerText = status ? "Claimed" : "Not Claimed";
         }
 
         async function updateTotalVotes() {
@@ -277,7 +740,23 @@
                 const accounts = await web3.eth.getAccounts();
                 updateTip();
                 updatePollResults();
+                updateTimerStatus();
+                updateLastWinner();
                 updateLastMessage();
+                updateCounterValue();
+                updateStoredData();
+                updateRandomValue();
+                updateLastGreeting();
+                updateTokenBalance();
+                updateLastTrackedEvent();
+                updateCurrentPrice();
+                updateLastTask();
+                updateYourScore();
+                updateLastFeedback();
+                updateLastWish();
+                updateQuizScore();
+                updateTotalDonated();
+                updateBadgeStatus();
                 updateTotalVotes();
                 updateLastEvent();
             }
