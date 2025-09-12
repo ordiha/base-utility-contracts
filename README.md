@@ -48,6 +48,8 @@ ProfileBadge contract: 0x38E160E83F7fe08fc33CcEB395f7E1bA490B3D66  link: https:/
 
 PollResultsViewer contract: 0xeA162AfCbB6ee15b985531756661DA0cf6d8e993  https://basescan.org/address/0xea162afcbb6ee15b985531756661da0cf6d8e993#code
 
+EventReminder contract: 0x1a96bDbaA512Eb6aEE08D589e1eAb1D9193484Ca  https://basescan.org/address/0x1a96bdbaa512eb6aee08d589e1eab1d9193484ca#code
+
 
 ## Features
 - Tip small amounts to support the project.
