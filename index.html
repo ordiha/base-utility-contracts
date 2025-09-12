@@ -284,7 +284,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.simpleTimer, addresses.simpleTimer);
-                await contract.methods.startTimer().send({ from: accounts[0], gas: 200000 }); // Increased gas
+                const gasEstimate = await contract.methods.startTimer().estimateGas({ from: accounts[0] });
+                await contract.methods.startTimer().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) }); // 20% buffer
                 status.innerText = "Started! Updating...";
                 updateTimerStatus();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -299,7 +300,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
-                await contract.methods.sendTip().send({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether'), gas: 100000 });
+                const gasEstimate = await contract.methods.sendTip().estimateGas({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether') });
+                await contract.methods.sendTip().send({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether'), gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Sent! Updating...";
                 updateTip();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -315,7 +317,8 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.votePoll, addresses.votePoll);
                 const vote = document.getElementById("voteOption").value === "true";
-                await contract.methods.vote(vote).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.vote(vote).estimateGas({ from: accounts[0] });
+                await contract.methods.vote(vote).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Voted! Updating...";
                 updatePollResults();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -330,7 +333,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.giveawayBox, addresses.giveawayBox);
-                await contract.methods.claimGiveaway().send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.claimGiveaway().estimateGas({ from: accounts[0] });
+                await contract.methods.claimGiveaway().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Claimed! Updating...";
                 updateLastWinner();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -346,7 +350,8 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.messageBoard, addresses.messageBoard);
                 const message = document.getElementById("messageInput").value;
-                await contract.methods.sendMessage(message).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.sendMessage(message).estimateGas({ from: accounts[0] });
+                await contract.methods.sendMessage(message).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Sent! Updating...";
                 updateLastMessage();
                 document.getElementById("messageInput").value = ""; // Clear input
@@ -362,7 +367,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.counter, addresses.counter);
-                await contract.methods.increment().send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.increment().estimateGas({ from: accounts[0] });
+                await contract.methods.increment().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Incremented! Updating...";
                 updateCounterValue();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -378,7 +384,8 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.storageunit, addresses.storageunit);
                 const data = document.getElementById("storeInput").value;
-                await contract.methods.store(data).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.store(data).estimateGas({ from: accounts[0] });
+                await contract.methods.store(data).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Stored! Updating...";
                 updateStoredData();
                 document.getElementById("storeInput").value = ""; // Clear input
@@ -408,7 +415,8 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.greetingcard, addresses.greetingcard);
                 const greeting = document.getElementById("greetingInput").value;
-                await contract.methods.sendGreeting(greeting).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.sendGreeting(greeting).estimateGas({ from: accounts[0] });
+                await contract.methods.sendGreeting(greeting).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Sent! Updating...";
                 updateLastGreeting();
                 document.getElementById("greetingInput").value = ""; // Clear input
@@ -424,7 +432,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.tokentracker, addresses.tokentracker);
-                await contract.methods.trackToken('0xYourTokenAddress').send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.trackToken('0xYourTokenAddress').estimateGas({ from: accounts[0] });
+                await contract.methods.trackToken('0xYourTokenAddress').send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Tracked! Updating...";
                 updateTokenBalance();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -439,7 +448,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.eventTracker, addresses.eventTracker);
-                await contract.methods.trackEvent(0).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.trackEvent(0).estimateGas({ from: accounts[0] });
+                await contract.methods.trackEvent(0).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Tracked! Updating...";
                 updateLastTrackedEvent();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -468,7 +478,8 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.todoList, addresses.todoList);
                 const task = document.getElementById("todoInput").value;
-                await contract.methods.addTask(task).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.addTask(task).estimateGas({ from: accounts[0] });
+                await contract.methods.addTask(task).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Added! Updating...";
                 updateLastTask();
                 document.getElementById("todoInput").value = ""; // Clear input
@@ -484,7 +495,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.scoreboard, addresses.scoreboard);
-                await contract.methods.addScore().send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.addScore().estimateGas({ from: accounts[0] });
+                await contract.methods.addScore().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Added! Updating...";
                 updateYourScore();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -500,7 +512,8 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.feedbackBox, addresses.feedbackBox);
                 const feedback = document.getElementById("feedbackInput").value;
-                await contract.methods.sendFeedback(feedback).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.sendFeedback(feedback).estimateGas({ from: accounts[0] });
+                await contract.methods.sendFeedback(feedback).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Sent! Updating...";
                 updateLastFeedback();
                 document.getElementById("feedbackInput").value = ""; // Clear input
@@ -517,7 +530,8 @@
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.wishList, addresses.wishList);
                 const wish = document.getElementById("wishInput").value;
-                await contract.methods.addWish(wish).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.addWish(wish).estimateGas({ from: accounts[0] });
+                await contract.methods.addWish(wish).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Added! Updating...";
                 updateLastWish();
                 document.getElementById("wishInput").value = ""; // Clear input
@@ -533,7 +547,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.quizGame, addresses.quizGame);
-                await contract.methods.submitAnswer(true).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.submitAnswer(true).estimateGas({ from: accounts[0] });
+                await contract.methods.submitAnswer(true).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Submitted! Updating...";
                 updateQuizScore();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -548,7 +563,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
-                await contract.methods.donate().send({ from: accounts[0], value: web3.utils.toWei('0.001', 'ether'), gas: 100000 });
+                const gasEstimate = await contract.methods.donate().estimateGas({ from: accounts[0], value: web3.utils.toWei('0.001', 'ether') });
+                await contract.methods.donate().send({ from: accounts[0], value: web3.utils.toWei('0.001', 'ether'), gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Donated! Updating...";
                 updateTotalDonated();
                 document.getElementById('withdrawBtn').disabled = false; // Enable withdraw after donation
@@ -564,7 +580,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
-                await contract.methods.withdraw().send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.withdraw().estimateGas({ from: accounts[0] });
+                await contract.methods.withdraw().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Withdrawn! Updating...";
                 updateTotalDonated();
                 document.getElementById('withdrawBtn').disabled = true; // Disable after withdrawal
@@ -580,7 +597,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.profileBadge, addresses.profileBadge);
-                await contract.methods.claimBadge().send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.claimBadge().estimateGas({ from: accounts[0] });
+                await contract.methods.claimBadge().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Claimed! Updating...";
                 updateBadgeStatus();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -595,7 +613,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.pollResultsViewer, addresses.pollResultsViewer);
-                await contract.methods.updateResults(0).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.updateResults(0).estimateGas({ from: accounts[0] });
+                await contract.methods.updateResults(0).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Updated! Refreshing...";
                 updateTotalVotes();
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -610,7 +629,8 @@
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 const contract = new web3.eth.Contract(abis.eventReminder, addresses.eventReminder);
-                await contract.methods.setReminder(0).send({ from: accounts[0], gas: 100000 });
+                const gasEstimate = await contract.methods.setReminder(0).estimateGas({ from: accounts[0] });
+                await contract.methods.setReminder(0).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Set! Updating...";
                 updateLastEvent();
             } catch (error) { status.innerText = "Error: " + error.message; }
