@@ -77,6 +77,7 @@
             color: #ff4444;
             font-weight: bold;
             text-align: center;
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -341,8 +342,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.simpleTimer, addresses.simpleTimer);
                 const gasEstimate = await contract.methods.startTimer().estimateGas({ from: accounts[0] });
-                await contract.methods.startTimer().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Started! Updating...";
+                const tx = await contract.methods.startTimer().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Started! Tx: " + tx.transactionHash + ". Updating...";
                 updateTimerStatus();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -357,8 +358,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
                 const gasEstimate = await contract.methods.sendTip().estimateGas({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether') });
-                await contract.methods.sendTip().send({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether'), gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Sent! Updating...";
+                const tx = await contract.methods.sendTip().send({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether'), gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Sent! Tx: " + tx.transactionHash + ". Updating...";
                 updateTip();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -374,8 +375,8 @@
                 const contract = new web3.eth.Contract(abis.votePoll, addresses.votePoll);
                 const vote = document.getElementById("voteOption").value === "true";
                 const gasEstimate = await contract.methods.vote(vote).estimateGas({ from: accounts[0] });
-                await contract.methods.vote(vote).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Voted! Updating...";
+                const tx = await contract.methods.vote(vote).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Voted! Tx: " + tx.transactionHash + ". Updating...";
                 updatePollResults();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -390,8 +391,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.giveawayBox, addresses.giveawayBox);
                 const gasEstimate = await contract.methods.claimGiveaway().estimateGas({ from: accounts[0] });
-                await contract.methods.claimGiveaway().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Claimed! Updating...";
+                const tx = await contract.methods.claimGiveaway().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Claimed! Tx: " + tx.transactionHash + ". Updating...";
                 updateLastWinner();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -407,8 +408,8 @@
                 const contract = new web3.eth.Contract(abis.messageBoard, addresses.messageBoard);
                 const message = document.getElementById("messageInput").value;
                 const gasEstimate = await contract.methods.sendMessage(message).estimateGas({ from: accounts[0] });
-                await contract.methods.sendMessage(message).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Sent! Updating...";
+                const tx = await contract.methods.sendMessage(message).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Sent! Tx: " + tx.transactionHash + ". Updating...";
                 updateLastMessage();
                 document.getElementById("messageInput").value = "";
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -424,8 +425,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.counter, addresses.counter);
                 const gasEstimate = await contract.methods.increment().estimateGas({ from: accounts[0] });
-                await contract.methods.increment().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Incremented! Updating...";
+                const tx = await contract.methods.increment().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Incremented! Tx: " + tx.transactionHash + ". Updating...";
                 updateCounterValue();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -441,8 +442,8 @@
                 const contract = new web3.eth.Contract(abis.storageunit, addresses.storageunit);
                 const data = document.getElementById("storeInput").value;
                 const gasEstimate = await contract.methods.store(data).estimateGas({ from: accounts[0] });
-                await contract.methods.store(data).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Stored! Updating...";
+                const tx = await contract.methods.store(data).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Stored! Tx: " + tx.transactionHash + ". Updating...";
                 updateStoredData();
                 document.getElementById("storeInput").value = "";
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -474,8 +475,8 @@
                 const contract = new web3.eth.Contract(abis.greetingcard, addresses.greetingcard);
                 const greeting = document.getElementById("greetingInput").value;
                 const gasEstimate = await contract.methods.sendGreeting(greeting).estimateGas({ from: accounts[0] });
-                await contract.methods.sendGreeting(greeting).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Sent! Updating...";
+                const tx = await contract.methods.sendGreeting(greeting).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Sent! Tx: " + tx.transactionHash + ". Updating...";
                 updateLastGreeting();
                 document.getElementById("greetingInput").value = "";
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -492,8 +493,8 @@
                 const contract = new web3.eth.Contract(abis.tokentracker, addresses.tokentracker);
                 const tokenAddress = document.getElementById("tokenAddress").value;
                 const gasEstimate = await contract.methods.trackToken(tokenAddress).estimateGas({ from: accounts[0] });
-                await contract.methods.trackToken(tokenAddress).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Tracked! Updating...";
+                const tx = await contract.methods.trackToken(tokenAddress).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Tracked! Tx: " + tx.transactionHash + ". Updating...";
                 updateTokenBalance();
                 document.getElementById("tokenAddress").value = "";
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -509,8 +510,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.eventTracker, addresses.eventTracker);
                 const gasEstimate = await contract.methods.trackEvent(0).estimateGas({ from: accounts[0] });
-                await contract.methods.trackEvent(0).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Tracked! Updating...";
+                const tx = await contract.methods.trackEvent(0).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Tracked! Tx: " + tx.transactionHash + ". Updating...";
                 updateLastTrackedEvent();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -541,8 +542,8 @@
                 const contract = new web3.eth.Contract(abis.todoList, addresses.todoList);
                 const task = document.getElementById("todoInput").value;
                 const gasEstimate = await contract.methods.addTask(task).estimateGas({ from: accounts[0] });
-                await contract.methods.addTask(task).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Added! Updating...";
+                const tx = await contract.methods.addTask(task).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Added! Tx: " + tx.transactionHash + ". Updating...";
                 updateLastTask();
                 document.getElementById("todoInput").value = "";
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -558,8 +559,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.scoreboard, addresses.scoreboard);
                 const gasEstimate = await contract.methods.addScore().estimateGas({ from: accounts[0] });
-                await contract.methods.addScore().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Added! Updating...";
+                const tx = await contract.methods.addScore().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Added! Tx: " + tx.transactionHash + ". Updating...";
                 updateYourScore();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -575,8 +576,8 @@
                 const contract = new web3.eth.Contract(abis.feedbackBox, addresses.feedbackBox);
                 const feedback = document.getElementById("feedbackInput").value;
                 const gasEstimate = await contract.methods.sendFeedback(feedback).estimateGas({ from: accounts[0] });
-                await contract.methods.sendFeedback(feedback).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Sent! Updating...";
+                const tx = await contract.methods.sendFeedback(feedback).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Sent! Tx: " + tx.transactionHash + ". Updating...";
                 updateLastFeedback();
                 document.getElementById("feedbackInput").value = "";
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -593,8 +594,8 @@
                 const contract = new web3.eth.Contract(abis.wishList, addresses.wishList);
                 const wish = document.getElementById("wishInput").value;
                 const gasEstimate = await contract.methods.addWish(wish).estimateGas({ from: accounts[0] });
-                await contract.methods.addWish(wish).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Added! Updating...";
+                const tx = await contract.methods.addWish(wish).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Added! Tx: " + tx.transactionHash + ". Updating...";
                 updateLastWish();
                 document.getElementById("wishInput").value = "";
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -610,8 +611,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.quizGame, addresses.quizGame);
                 const gasEstimate = await contract.methods.submitAnswer(true).estimateGas({ from: accounts[0] });
-                await contract.methods.submitAnswer(true).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Submitted! Updating...";
+                const tx = await contract.methods.submitAnswer(true).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Submitted! Tx: " + tx.transactionHash + ". Updating...";
                 updateQuizScore();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -626,8 +627,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
                 const gasEstimate = await contract.methods.donate().estimateGas({ from: accounts[0], value: web3.utils.toWei('0.001', 'ether') });
-                await contract.methods.donate().send({ from: accounts[0], value: web3.utils.toWei('0.001', 'ether'), gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Donated! Updating...";
+                const tx = await contract.methods.donate().send({ from: accounts[0], value: web3.utils.toWei('0.001', 'ether'), gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Donated! Tx: " + tx.transactionHash + ". Updating...";
                 updateTotalDonated();
                 document.getElementById('withdrawBtn').disabled = false;
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -643,8 +644,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
                 const gasEstimate = await contract.methods.withdraw().estimateGas({ from: accounts[0] });
-                await contract.methods.withdraw().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Withdrawn! Updating...";
+                const tx = await contract.methods.withdraw().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Withdrawn! Tx: " + tx.transactionHash + ". Updating...";
                 updateTotalDonated();
                 document.getElementById('withdrawBtn').disabled = true;
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -660,8 +661,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.profileBadge, addresses.profileBadge);
                 const gasEstimate = await contract.methods.claimBadge().estimateGas({ from: accounts[0] });
-                await contract.methods.claimBadge().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Claimed! Updating...";
+                const tx = await contract.methods.claimBadge().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Claimed! Tx: " + tx.transactionHash + ". Updating...";
                 updateBadgeStatus();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -676,8 +677,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.pollResultsViewer, addresses.pollResultsViewer);
                 const gasEstimate = await contract.methods.updateResults(0).estimateGas({ from: accounts[0] });
-                await contract.methods.updateResults(0).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Updated! Refreshing...";
+                const tx = await contract.methods.updateResults(0).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Updated! Tx: " + tx.transactionHash + ". Refreshing...";
                 updateTotalVotes();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -692,8 +693,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.eventReminder, addresses.eventReminder);
                 const gasEstimate = await contract.methods.setReminder(0).estimateGas({ from: accounts[0] });
-                await contract.methods.setReminder(0).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Set! Updating...";
+                const tx = await contract.methods.setReminder(0).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Set! Tx: " + tx.transactionHash + ". Updating...";
                 updateLastEvent();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -709,8 +710,8 @@
                 const contract = new web3.eth.Contract(abis.feedbackCollector, addresses.feedbackCollector);
                 const feedback = document.getElementById("feedbackInputNew").value;
                 const gasEstimate = await contract.methods.submitFeedback(feedback).estimateGas({ from: accounts[0] });
-                await contract.methods.submitFeedback(feedback).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Submitted! Updating...";
+                const tx = await contract.methods.submitFeedback(feedback).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Submitted! Tx: " + tx.transactionHash + ". Updating...";
                 updateFeedbackCount();
                 document.getElementById("feedbackInputNew").value = "";
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -726,8 +727,8 @@
             try {
                 const contract = new web3.eth.Contract(abis.rewardTracker, addresses.rewardTracker);
                 const gasEstimate = await contract.methods.addReward(accounts[0], 1).estimateGas({ from: accounts[0] });
-                await contract.methods.addReward(accounts[0], 1).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Added! Updating...";
+                const tx = await contract.methods.addReward(accounts[0], 1).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Added! Tx: " + tx.transactionHash + ". Updating...";
                 updateYourReward();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -743,8 +744,8 @@
                 const contract = new web3.eth.Contract(abis.eventLogger, addresses.eventLogger);
                 const log = document.getElementById("logInput").value;
                 const gasEstimate = await contract.methods.recordLog(log).estimateGas({ from: accounts[0] });
-                await contract.methods.recordLog(log).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Recorded! Updating...";
+                const tx = await contract.methods.recordLog(log).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Recorded! Tx: " + tx.transactionHash + ". Updating...";
                 updateLogCount();
                 document.getElementById("logInput").value = "";
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -752,147 +753,268 @@
 
         async function updateTimerStatus() {
             const contract = new web3.eth.Contract(abis.simpleTimer, addresses.simpleTimer);
-            const status = await contract.methods.getStatus().call();
-            document.getElementById('timerStatus').innerText = status ? "Active" : "Inactive";
+            try {
+                const status = await contract.methods.getStatus().call();
+                document.getElementById('timerStatus').innerText = status ? "Active" : "Inactive";
+            } catch (error) {
+                document.getElementById('timerStatus').innerText = "Error fetching status";
+                console.error("UpdateTimerStatus error:", error);
+            }
         }
 
         async function updateTip() {
             const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
-            const tip = await contract.methods.getTip(accounts[0]).call();
-            document.getElementById('tipAmount').innerText = tip;
+            try {
+                const tip = await contract.methods.getTip(accounts[0]).call();
+                document.getElementById('tipAmount').innerText = tip;
+            } catch (error) {
+                document.getElementById('tipAmount').innerText = "Error fetching tip";
+                console.error("UpdateTip error:", error);
+            }
         }
 
         async function updatePollResults() {
             const contract = new web3.eth.Contract(abis.votePoll, addresses.votePoll);
-            const [yes, no] = await contract.methods.getResults().call();
-            document.getElementById('yesVotes').innerText = yes;
-            document.getElementById('noVotes').innerText = no;
+            try {
+                const [yes, no] = await contract.methods.getResults().call();
+                document.getElementById('yesVotes').innerText = yes;
+                document.getElementById('noVotes').innerText = no;
+            } catch (error) {
+                document.getElementById('yesVotes').innerText = "Error";
+                document.getElementById('noVotes').innerText = "Error";
+                console.error("UpdatePollResults error:", error);
+            }
         }
 
         async function updateLastWinner() {
             const contract = new web3.eth.Contract(abis.giveawayBox, addresses.giveawayBox);
-            const winner = await contract.methods.getLastWinner().call();
-            document.getElementById('lastWinner').innerText = winner;
+            try {
+                const winner = await contract.methods.getLastWinner().call();
+                document.getElementById('lastWinner').innerText = winner;
+            } catch (error) {
+                document.getElementById('lastWinner').innerText = "Error fetching winner";
+                console.error("UpdateLastWinner error:", error);
+            }
         }
 
         async function updateLastMessage() {
             const contract = new web3.eth.Contract(abis.messageBoard, addresses.messageBoard);
-            const message = await contract.methods.getMessage(0).call();
-            document.getElementById('lastMessage').innerText = message;
+            try {
+                const message = await contract.methods.getMessage(0).call();
+                document.getElementById('lastMessage').innerText = message;
+            } catch (error) {
+                document.getElementById('lastMessage').innerText = "Error fetching message";
+                console.error("UpdateLastMessage error:", error);
+            }
         }
 
         async function updateCounterValue() {
             const contract = new web3.eth.Contract(abis.counter, addresses.counter);
-            const count = await contract.methods.getCount().call();
-            document.getElementById('counterValue').innerText = count;
+            try {
+                const count = await contract.methods.getCount().call();
+                document.getElementById('counterValue').innerText = count;
+            } catch (error) {
+                document.getElementById('counterValue').innerText = "Error fetching count";
+                console.error("UpdateCounterValue error:", error);
+            }
         }
 
         async function updateStoredData() {
             const contract = new web3.eth.Contract(abis.storageunit, addresses.storageunit);
-            const data = await contract.methods.getData().call();
-            document.getElementById('storedData').innerText = data;
+            try {
+                const data = await contract.methods.getData().call();
+                document.getElementById('storedData').innerText = data;
+            } catch (error) {
+                document.getElementById('storedData').innerText = "Error fetching data";
+                console.error("UpdateStoredData error:", error);
+            }
         }
 
         async function updateRandomValue() {
             const contract = new web3.eth.Contract(abis.randompicker, addresses.randompicker);
-            const value = await contract.methods.pickRandom().call();
-            document.getElementById('randomValue').innerText = value;
+            try {
+                const value = await contract.methods.pickRandom().call();
+                document.getElementById('randomValue').innerText = value;
+            } catch (error) {
+                document.getElementById('randomValue').innerText = "Error fetching value";
+                console.error("UpdateRandomValue error:", error);
+            }
         }
 
         async function updateLastGreeting() {
             const contract = new web3.eth.Contract(abis.greetingcard, addresses.greetingcard);
-            const greeting = await contract.methods.getGreeting(0).call();
-            document.getElementById('lastGreeting').innerText = greeting;
+            try {
+                const greeting = await contract.methods.getGreeting(0).call();
+                document.getElementById('lastGreeting').innerText = greeting;
+            } catch (error) {
+                document.getElementById('lastGreeting').innerText = "Error fetching greeting";
+                console.error("UpdateLastGreeting error:", error);
+            }
         }
 
         async function updateTokenBalance() {
             const contract = new web3.eth.Contract(abis.tokentracker, addresses.tokentracker);
-            const balance = await contract.methods.getBalance(accounts[0]).call();
-            document.getElementById('tokenBalance').innerText = balance;
+            try {
+                const balance = await contract.methods.getBalance(accounts[0]).call();
+                document.getElementById('tokenBalance').innerText = balance;
+            } catch (error) {
+                document.getElementById('tokenBalance').innerText = "Error fetching balance";
+                console.error("UpdateTokenBalance error:", error);
+            }
         }
 
         async function updateLastTrackedEvent() {
             const contract = new web3.eth.Contract(abis.eventTracker, addresses.eventTracker);
-            const event = await contract.methods.getEvent(0).call();
-            document.getElementById('lastTrackedEvent').innerText = event;
+            try {
+                const event = await contract.methods.getEvent(0).call();
+                document.getElementById('lastTrackedEvent').innerText = event;
+            } catch (error) {
+                document.getElementById('lastTrackedEvent').innerText = "Error fetching event";
+                console.error("UpdateLastTrackedEvent error:", error);
+            }
         }
 
         async function updateCurrentPrice() {
             const contract = new web3.eth.Contract(abis.priceChecker, addresses.priceChecker);
-            const price = await contract.methods.checkPrice().call();
-            document.getElementById('currentPrice').innerText = web3.utils.fromWei(price, 'ether');
+            try {
+                const price = await contract.methods.checkPrice().call();
+                document.getElementById('currentPrice').innerText = web3.utils.fromWei(price, 'ether');
+            } catch (error) {
+                document.getElementById('currentPrice').innerText = "Error fetching price";
+                console.error("UpdateCurrentPrice error:", error);
+            }
         }
 
         async function updateLastTask() {
             const contract = new web3.eth.Contract(abis.todoList, addresses.todoList);
-            const task = await contract.methods.getTask(0).call();
-            document.getElementById('lastTask').innerText = task;
+            try {
+                const task = await contract.methods.getTask(0).call();
+                document.getElementById('lastTask').innerText = task;
+            } catch (error) {
+                document.getElementById('lastTask').innerText = "Error fetching task";
+                console.error("UpdateLastTask error:", error);
+            }
         }
 
         async function updateYourScore() {
             const contract = new web3.eth.Contract(abis.scoreboard, addresses.scoreboard);
-            const score = await contract.methods.getScore(accounts[0]).call();
-            document.getElementById('yourScore').innerText = score;
+            try {
+                const score = await contract.methods.getScore(accounts[0]).call();
+                document.getElementById('yourScore').innerText = score;
+            } catch (error) {
+                document.getElementById('yourScore').innerText = "Error fetching score";
+                console.error("UpdateYourScore error:", error);
+            }
         }
 
         async function updateLastFeedback() {
             const contract = new web3.eth.Contract(abis.feedbackBox, addresses.feedbackBox);
-            const feedback = await contract.methods.getFeedback(0).call();
-            document.getElementById('lastFeedback').innerText = feedback;
+            try {
+                const feedback = await contract.methods.getFeedback(0).call();
+                document.getElementById('lastFeedback').innerText = feedback;
+            } catch (error) {
+                document.getElementById('lastFeedback').innerText = "Error fetching feedback";
+                console.error("UpdateLastFeedback error:", error);
+            }
         }
 
         async function updateLastWish() {
             const contract = new web3.eth.Contract(abis.wishList, addresses.wishList);
-            const wish = await contract.methods.getWish(0).call();
-            document.getElementById('lastWish').innerText = wish;
+            try {
+                const wish = await contract.methods.getWish(0).call();
+                document.getElementById('lastWish').innerText = wish;
+            } catch (error) {
+                document.getElementById('lastWish').innerText = "Error fetching wish";
+                console.error("UpdateLastWish error:", error);
+            }
         }
 
         async function updateQuizScore() {
             const contract = new web3.eth.Contract(abis.quizGame, addresses.quizGame);
-            const score = await contract.methods.getScore(accounts[0]).call();
-            document.getElementById('quizScore').innerText = score;
+            try {
+                const score = await contract.methods.getScore(accounts[0]).call();
+                document.getElementById('quizScore').innerText = score;
+            } catch (error) {
+                document.getElementById('quizScore').innerText = "Error fetching score";
+                console.error("UpdateQuizScore error:", error);
+            }
         }
 
         async function updateTotalDonated() {
             const contract = new web3.eth.Contract(abis.donationPool, addresses.donationPool);
-            const total = await contract.methods.getTotalDonated().call();
-            document.getElementById('totalDonated').innerText = total;
+            try {
+                const total = await contract.methods.getTotalDonated().call();
+                document.getElementById('totalDonated').innerText = total;
+            } catch (error) {
+                document.getElementById('totalDonated').innerText = "Error fetching total";
+                console.error("UpdateTotalDonated error:", error);
+            }
         }
 
         async function updateBadgeStatus() {
             const contract = new web3.eth.Contract(abis.profileBadge, addresses.profileBadge);
-            const status = await contract.methods.getBadgeStatus(accounts[0]).call();
-            document.getElementById('badgeStatus').innerText = status ? "Claimed" : "Not Claimed";
+            try {
+                const status = await contract.methods.getBadgeStatus(accounts[0]).call();
+                document.getElementById('badgeStatus').innerText = status ? "Claimed" : "Not Claimed";
+            } catch (error) {
+                document.getElementById('badgeStatus').innerText = "Error fetching status";
+                console.error("UpdateBadgeStatus error:", error);
+            }
         }
 
         async function updateTotalVotes() {
             const contract = new web3.eth.Contract(abis.pollResultsViewer, addresses.pollResultsViewer);
-            const total = await contract.methods.getTotalVotes(0).call();
-            document.getElementById('totalVotes').innerText = total;
+            try {
+                const total = await contract.methods.getTotalVotes(0).call();
+                document.getElementById('totalVotes').innerText = total;
+            } catch (error) {
+                document.getElementById('totalVotes').innerText = "Error fetching votes";
+                console.error("UpdateTotalVotes error:", error);
+            }
         }
 
         async function updateLastEvent() {
             const contract = new web3.eth.Contract(abis.eventReminder, addresses.eventReminder);
-            const event = await contract.methods.getEvent(0).call();
-            document.getElementById('lastEvent').innerText = event;
+            try {
+                const event = await contract.methods.getEvent(0).call();
+                document.getElementById('lastEvent').innerText = event;
+            } catch (error) {
+                document.getElementById('lastEvent').innerText = "Error fetching event";
+                console.error("UpdateLastEvent error:", error);
+            }
         }
 
         async function updateFeedbackCount() {
             const contract = new web3.eth.Contract(abis.feedbackCollector, addresses.feedbackCollector);
-            const count = await contract.methods.getFeedbackCount().call();
-            document.getElementById('feedbackCount').innerText = count;
+            try {
+                const count = await contract.methods.getFeedbackCount().call();
+                document.getElementById('feedbackCount').innerText = count;
+            } catch (error) {
+                document.getElementById('feedbackCount').innerText = "Error fetching count";
+                console.error("UpdateFeedbackCount error:", error);
+            }
         }
 
         async function updateYourReward() {
             const contract = new web3.eth.Contract(abis.rewardTracker, addresses.rewardTracker);
-            const reward = await contract.methods.getReward(accounts[0]).call();
-            document.getElementById('yourReward').innerText = reward;
+            try {
+                const reward = await contract.methods.getReward(accounts[0]).call();
+                document.getElementById('yourReward').innerText = reward;
+            } catch (error) {
+                document.getElementById('yourReward').innerText = "Error fetching reward";
+                console.error("UpdateYourReward error:", error);
+            }
         }
 
         async function updateLogCount() {
             const contract = new web3.eth.Contract(abis.eventLogger, addresses.eventLogger);
-            const count = await contract.methods.getLogCount().call();
-            document.getElementById('logCount').innerText = count;
+            try {
+                const count = await contract.methods.getLogCount().call();
+                document.getElementById('logCount').innerText = count;
+            } catch (error) {
+                document.getElementById('logCount').innerText = "Error fetching count";
+                console.error("UpdateLogCount error:", error);
+            }
         }
 
         async function updateAll() {
