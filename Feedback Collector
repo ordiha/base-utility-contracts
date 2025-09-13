@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract FeedbackCollector {
+    address public owner;
+    string[] public feedbacks;
+
+    event FeedbackSubmitted(address indexed user, string feedback, uint256 timestamp);
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function submitFeedback(string memory _feedback) public {
+        feedbacks.push(_feedback);
+        emit FeedbackSubmitted(msg.sender, _feedback, block.timestamp);
+    }
+
+    function getFeedbackCount() public view returns (uint256) {
+        return feedbacks.length;
+    }
+
+    function getFeedback(uint256 _index) public view returns (string memory) {
+        require(_index < feedbacks.length, "Index out of bounds");
+        return feedbacks[_index];
+    }
+}
