@@ -1,6 +1,6 @@
 # Base Utility Contracts
 
-  - Front-end: https://idyllic-quokka-10d37e.netlify.app/
+  - Front-end: https://timely-tulumba-2360e0.netlify.app/
   - Note: Only the owner can withdraw funds. Tip with caution as the code is open-source!
 
 This repository contains smart contracts deployed on the Base network to enhance user experience, part of the Base Builders.
