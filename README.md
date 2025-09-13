@@ -50,6 +50,8 @@ PollResultsViewer contract: 0xeA162AfCbB6ee15b985531756661DA0cf6d8e993  https://
 
 EventReminder contract: 0x1a96bDbaA512Eb6aEE08D589e1eAb1D9193484Ca  https://basescan.org/address/0x1a96bdbaa512eb6aee08d589e1eab1d9193484ca#code
 
+FeedbackCollector contract: 0xfE4926D33Ab79E327818615E95EfB71390296BEc  https://basescan.org/address/0xfe4926d33ab79e327818615e95efb71390296bec#code
+
 
 ## Features
 - Tip small amounts to support the project.
