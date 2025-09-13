@@ -87,14 +87,14 @@
 
         <div class="section">
             <h2>SimpleTimer</h2>
-            <button onclick="startTimer()">Start Timer</button>
-            <p>Timer Status: <span id="timerStatus"></span></p>
+            <button onclick="resetTimer()">Reset Timer</button>
+            <p>Time Left: <span id="timerStatus"></span> seconds</p>
         </div>
 
         <div class="section">
             <h2>TipJar</h2>
-            <button onclick="sendTip()">Send Tip (0.000001 ETH)</button>
-            <p>Your Total Tips: <span id="tipAmount"></span> wei</p>
+            <button onclick="tip()">Tip</button>
+            <p>Total Tips: <span id="tipAmount"></span> wei</p>
         </div>
 
         <div class="section">
@@ -110,13 +110,13 @@
         <div class="section">
             <h2>GiveawayBox</h2>
             <button onclick="claimGiveaway()">Claim Giveaway</button>
-            <p>Last Winner: <span id="lastWinner"></span></p>
+            <p>Claim Amount: <span id="claimAmount"></span> wei</p>
         </div>
 
         <div class="section">
             <h2>MessageBoard</h2>
             <input type="text" id="messageInput" placeholder="Enter message">
-            <button onclick="sendMessage()">Send Message</button>
+            <button onclick="setMessage()">Set Message</button>
             <p>Last Message: <span id="lastMessage"></span></p>
         </div>
 
@@ -275,11 +275,11 @@
             eventLogger: '0xFac50ce5cdb4E93608A5032b9c3Ca60bA3a8D5d5'
         };
         const abis = {
-            simpleTimer: [{"inputs":[],"name":"startTimer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getStatus","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],
-            tipJar: [{"inputs":[],"name":"sendTip","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTip","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            simpleTimer: [{"inputs":[],"name":"resetTimer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"duration","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getTimeLeft","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+            tipJar: [{"inputs":[],"name":"tip","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTips","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}],
             votePoll: [{"inputs":[{"internalType":"bool","name":"_yes","type":"bool"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getResults","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
-            giveawayBox: [{"inputs":[],"name":"claimGiveaway","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getLastWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}],
-            messageBoard: [{"inputs":[{"internalType":"string","name":"_msg","type":"string"}],"name":"sendMessage","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],"name":"getMessage","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
+            giveawayBox: [{"inputs":[],"name":"addFunds","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hasClaimed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],
+            messageBoard: [{"inputs":[{"internalType":"string","name":"_message","type":"string"}],"name":"setMessage","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getMessage","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
             counter: [{"inputs":[],"name":"increment","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
             storageunit: [{"inputs":[{"internalType":"string","name":"_data","type":"string"}],"name":"store","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getData","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}],
             randompicker: [{"inputs":[],"name":"pickRandom","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
@@ -332,34 +332,34 @@
             }
         }
 
-        async function startTimer() {
+        async function resetTimer() {
             if (!accounts || accounts.length === 0) {
                 document.getElementById("status").innerText = "Please connect MetaMask!";
                 return;
             }
             const status = document.getElementById("status");
-            status.innerText = "Starting...";
+            status.innerText = "Resetting...";
             try {
                 const contract = new web3.eth.Contract(abis.simpleTimer, addresses.simpleTimer);
-                const gasEstimate = await contract.methods.startTimer().estimateGas({ from: accounts[0] });
-                const tx = await contract.methods.startTimer().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Started! Tx: " + tx.transactionHash + ". Updating...";
+                const gasEstimate = await contract.methods.resetTimer().estimateGas({ from: accounts[0] });
+                const tx = await contract.methods.resetTimer().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Reset! Tx: " + tx.transactionHash + ". Updating...";
                 updateTimerStatus();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
 
-        async function sendTip() {
+        async function tip() {
             if (!accounts || accounts.length === 0) {
                 document.getElementById("status").innerText = "Please connect MetaMask!";
                 return;
             }
             const status = document.getElementById("status");
-            status.innerText = "Sending...";
+            status.innerText = "Tipping...";
             try {
                 const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
-                const gasEstimate = await contract.methods.sendTip().estimateGas({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether') });
-                const tx = await contract.methods.sendTip().send({ from: accounts[0], value: web3.utils.toWei('0.000001', 'ether'), gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Sent! Tx: " + tx.transactionHash + ". Updating...";
+                const gasEstimate = await contract.methods.tip().estimateGas({ from: accounts[0] });
+                const tx = await contract.methods.tip().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Tipped! Tx: " + tx.transactionHash + ". Updating...";
                 updateTip();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
@@ -390,26 +390,26 @@
             status.innerText = "Claiming...";
             try {
                 const contract = new web3.eth.Contract(abis.giveawayBox, addresses.giveawayBox);
-                const gasEstimate = await contract.methods.claimGiveaway().estimateGas({ from: accounts[0] });
-                const tx = await contract.methods.claimGiveaway().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                const gasEstimate = await contract.methods.claim().estimateGas({ from: accounts[0] });
+                const tx = await contract.methods.claim().send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
                 status.innerText = "Claimed! Tx: " + tx.transactionHash + ". Updating...";
-                updateLastWinner();
+                updateClaimAmount();
             } catch (error) { status.innerText = "Error: " + error.message; }
         }
 
-        async function sendMessage() {
+        async function setMessage() {
             if (!accounts || accounts.length === 0) {
                 document.getElementById("status").innerText = "Please connect MetaMask!";
                 return;
             }
             const status = document.getElementById("status");
-            status.innerText = "Sending...";
+            status.innerText = "Setting...";
             try {
                 const contract = new web3.eth.Contract(abis.messageBoard, addresses.messageBoard);
                 const message = document.getElementById("messageInput").value;
-                const gasEstimate = await contract.methods.sendMessage(message).estimateGas({ from: accounts[0] });
-                const tx = await contract.methods.sendMessage(message).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
-                status.innerText = "Sent! Tx: " + tx.transactionHash + ". Updating...";
+                const gasEstimate = await contract.methods.setMessage(message).estimateGas({ from: accounts[0] });
+                const tx = await contract.methods.setMessage(message).send({ from: accounts[0], gas: Math.floor(gasEstimate * 1.2) });
+                status.innerText = "Set! Tx: " + tx.transactionHash + ". Updating...";
                 updateLastMessage();
                 document.getElementById("messageInput").value = "";
             } catch (error) { status.innerText = "Error: " + error.message; }
@@ -754,10 +754,10 @@
         async function updateTimerStatus() {
             const contract = new web3.eth.Contract(abis.simpleTimer, addresses.simpleTimer);
             try {
-                const status = await contract.methods.getStatus().call();
-                document.getElementById('timerStatus').innerText = status ? "Active" : "Inactive";
+                const timeLeft = await contract.methods.getTimeLeft().call();
+                document.getElementById('timerStatus').innerText = timeLeft > 0 ? timeLeft : "Timer expired";
             } catch (error) {
-                document.getElementById('timerStatus').innerText = "Error fetching status";
+                document.getElementById('timerStatus').innerText = "Error fetching time";
                 console.error("UpdateTimerStatus error:", error);
             }
         }
@@ -765,10 +765,10 @@
         async function updateTip() {
             const contract = new web3.eth.Contract(abis.tipJar, addresses.tipJar);
             try {
-                const tip = await contract.methods.getTip(accounts[0]).call();
-                document.getElementById('tipAmount').innerText = tip;
+                const totalTips = await contract.methods.totalTips().call();
+                document.getElementById('tipAmount').innerText = totalTips;
             } catch (error) {
-                document.getElementById('tipAmount').innerText = "Error fetching tip";
+                document.getElementById('tipAmount').innerText = "Error fetching tips";
                 console.error("UpdateTip error:", error);
             }
         }
@@ -786,21 +786,21 @@
             }
         }
 
-        async function updateLastWinner() {
+        async function updateClaimAmount() {
             const contract = new web3.eth.Contract(abis.giveawayBox, addresses.giveawayBox);
             try {
-                const winner = await contract.methods.getLastWinner().call();
-                document.getElementById('lastWinner').innerText = winner;
+                const amount = await contract.methods.claimAmount().call();
+                document.getElementById('claimAmount').innerText = amount;
             } catch (error) {
-                document.getElementById('lastWinner').innerText = "Error fetching winner";
-                console.error("UpdateLastWinner error:", error);
+                document.getElementById('claimAmount').innerText = "Error fetching amount";
+                console.error("UpdateClaimAmount error:", error);
             }
         }
 
         async function updateLastMessage() {
             const contract = new web3.eth.Contract(abis.messageBoard, addresses.messageBoard);
             try {
-                const message = await contract.methods.getMessage(0).call();
+                const message = await contract.methods.getMessage().call();
                 document.getElementById('lastMessage').innerText = message;
             } catch (error) {
                 document.getElementById('lastMessage').innerText = "Error fetching message";
@@ -1023,7 +1023,7 @@
                 return;
             }
             await Promise.all([
-                updateTimerStatus(), updateTip(), updatePollResults(), updateLastWinner(),
+                updateTimerStatus(), updateTip(), updatePollResults(), updateClaimAmount(),
                 updateLastMessage(), updateCounterValue(), updateStoredData(), updateRandomValue(),
                 updateLastGreeting(), updateTokenBalance(), updateLastTrackedEvent(), updateCurrentPrice(),
                 updateLastTask(), updateYourScore(), updateLastFeedback(), updateLastWish(),
