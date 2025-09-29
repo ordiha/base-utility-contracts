@@ -2,76 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Base DApp Utility Suite</title>
-
-  <!-- Web3.js -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
-  <!-- WalletConnect Web3 Provider -->
-  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0d1117;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-    }
-    button {
-      padding: 10px 20px;
-      background: #d4a017;
-      border: none;
-      border-radius: 5px;
-      color: #fff;
-      cursor: pointer;
-      margin: 10px;
-    }
-    button:hover { background: #b8860b; }
-    #status { margin-top: 10px; font-weight: bold; }
-  </style>
+  <title>WalletConnect Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider/dist/ethereum-provider.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.umd.min.js"></script>
 </head>
 <body>
-  <h1>Base DApp Utility Suite</h1>
-  <button onclick="connectWallet()">Connect Wallet</button>
-  <p id="status">Not connected</p>
+  <button id="connectBtn">Connect Wallet</button>
 
   <script>
-    let web3;
-    let accounts;
-    let provider;
+    const projectId = "YOUR_WALLETCONNECT_PROJECT_ID"; // <-- replace with your actual ID
 
-    async function connectWallet() {
+    document.getElementById("connectBtn").addEventListener("click", async () => {
       try {
-        provider = new WalletConnectProvider.default({
-          rpc: {
-            8453: "https://mainnet.base.org"  // Base Mainnet RPC
-          },
-          chainId: 8453,
-          qrcode: true
+        const provider = await window.WalletConnectEthereumProvider.init({
+          projectId: projectId,
+          chains: [1], // Ethereum mainnet
+          showQrModal: true,
+          qrModalOptions: { desktopInjectedProvider: window.ethereum || null }
         });
 
-        // Enable session
         await provider.enable();
 
-        web3 = new Web3(provider);
-        accounts = await web3.eth.getAccounts();
+        const ethersProvider = new ethers.providers.Web3Provider(provider);
+        const signer = ethersProvider.getSigner();
+        const address = await signer.getAddress();
 
-        document.getElementById("status").innerText = "Connected: " + accounts[0];
-
-        // listen for account changes
-        provider.on("accountsChanged", (accs) => {
-          accounts = accs;
-          document.getElementById("status").innerText = "Connected: " + accounts[0];
-        });
-
-        provider.on("disconnect", () => {
-          document.getElementById("status").innerText = "Disconnected";
-        });
+        console.log("Connected:", address);
+        alert("Connected: " + address);
       } catch (err) {
-        document.getElementById("status").innerText = "Error: " + err.message;
+        console.error(err);
       }
-    }
+    });
   </script>
 </body>
 </html>
