@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>WalletConnect Demo</title>
-<script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider/dist/ethereum-provider.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.8.5/dist/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -30,25 +30,28 @@
 </style>
 </head>
 <body>
-  <button id="connectBtn">Connect Wallet</button>
+<button id="connectBtn">Connect Wallet</button>
 
 <script>
-const projectId = "YOUR_WALLETCONNECT_PROJECT_ID"; // <-- replace this
+const projectId = "YOUR_WALLETCONNECT_PROJECT_ID"; // <-- replace
+
+let provider;
 
 async function connectWallet() {
   try {
-    // Init WalletConnect provider
-    const provider = await window.WalletConnectEthereumProvider.init({
-      projectId: projectId,
-      chains: [1], // Ethereum mainnet
-      showQrModal: true,
-      qrModalOptions: { desktopInjectedProvider: window.ethereum || null }
-    });
+    if (!provider) {
+      // Create provider
+      provider = new window.WalletConnectProvider.WalletConnectProvider({
+        projectId: projectId,
+        chains: [1], // Ethereum mainnet
+        showQrModal: true
+      });
+    }
 
-    // Enable session
+    // Enable provider
     await provider.enable();
 
-    // Ethers.js provider
+    // Use ethers.js
     const ethersProvider = new ethers.providers.Web3Provider(provider);
     const signer = ethersProvider.getSigner();
     const address = await signer.getAddress();
