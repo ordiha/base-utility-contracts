@@ -1,124 +1,59 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Base Utility Contracts — WalletConnect fixed</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Base Utility Contracts — WalletConnect fixed</title>
 
-  <!-- Ethers.js -->
-  <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<!-- Ethers.js -->
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-  <!-- WalletConnect Modal UMD -->
-  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/umd/index.min.js"></script>
+<!-- Reown AppKit WalletConnect v2 -->
+<script src="https://cdn.jsdelivr.net/npm/@reown/appkit@1.0.22/dist/appkit.umd.min.js"></script>
 
-  <style>
-    body{margin:0;font-family:Inter,Arial,sans-serif;background:#0d1117;color:#fff}
-    .wrap{max-width:1000px;margin:20px auto;padding:12px}
-    header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-    h1{font-size:1.3rem;color:#ffd166;margin:0}
-    button{background:#ffd166;color:#111;border:0;padding:10px 14px;border-radius:8px;cursor:pointer}
-    .addr{font-family:monospace;padding:6px 10px;background:#222;border-radius:8px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:18px}
-    .card{background:#161b22;padding:12px;border-radius:12px}
-    .card h3{margin:0 0 6px}
-    .fn-row{display:flex;flex-direction:column;gap:6px;margin-top:6px}
-    input{padding:6px;border-radius:6px;border:1px solid #333;background:#0d1117;color:#fff}
-    .call-btn{background:#00b894;color:#fff;border:0;padding:6px;border-radius:6px;cursor:pointer}
-    .status{margin-top:4px;font-size:12px;min-height:14px;color:#b7f5c6;word-break:break-word}
-  </style>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#0d1117;color:#fff}
+.wrap{max-width:900px;margin:20px auto;padding:12px}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+h1{font-size:1.3rem;color:#ffd166;margin:0}
+button{background:#ffd166;color:#111;border:0;padding:10px 14px;border-radius:8px;cursor:pointer}
+.addr{font-family:monospace;padding:6px 10px;background:#222;border-radius:8px}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>Base Utility Contracts — WalletConnect ready</h1>
-        <div style="font-size:13px;color:#aaa">Project ID: <b>0808ceb934963ee4f7d69774d29cb28a</b></div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button id="btnConnect">🔗 Connect Wallet</button>
-        <div id="addr" class="addr">Not connected</div>
-      </div>
-    </header>
+<div class="wrap">
+  <header>
+    <h1>Base Utility Contracts — WalletConnect ready</h1>
+    <div>Project ID: <b>0808ceb934963ee4f7d69774d29cb28a</b></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="btnConnect">🔗 Connect Wallet</button>
+      <div id="addr" class="addr">Not connected</div>
+    </div>
+  </header>
+</div>
 
-    <main id="mainArea" class="grid"></main>
-  </div>
+<script>
+const projectId = "0808ceb934963ee4f7d69774d29cb28a";
+let provider, signer;
 
-  <script>
-  const WC_PROJECT_ID = "0808ceb934963ee4f7d69774d29cb28a";
-  const { EthereumProvider } = window.WalletConnectModal;
-
-  let ethersProvider = null, signer = null, connected = null;
-
-  const contracts = {
-    tipJar:{name:"TipJar",address:"0x62A3536df479317Bd76480F801278867dB1603Ff",
-      abi:[{"inputs":[],"name":"tip","outputs":[],"stateMutability":"payable","type":"function"},
-           {"inputs":[],"name":"totalTips","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]},
-    simpleTimer:{name:"SimpleTimer",address:"0xC1949249093af2d0aaB8a2D2B241e0B828171DE7",
-      abi:[{"inputs":[],"name":"resetTimer","outputs":[],"stateMutability":"nonpayable","type":"function"},
-           {"inputs":[],"name":"getTimeLeft","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]}
-  };
-
-  async function connectWallet(){
-    try {
-      const provider = await EthereumProvider.init({
-        projectId: WC_PROJECT_ID,
-        chains:[8453],
-        showQrModal:true
-      });
-      await provider.enable();
-      ethersProvider = new ethers.providers.Web3Provider(provider);
-      signer = ethersProvider.getSigner();
-      const addr = await signer.getAddress();
-      document.getElementById("addr").innerText = addr;
-      connected = provider;
-      renderAllContracts();
-    } catch(e){
-      console.error(e);
-      alert("Connection failed: " + (e.message||e));
-    }
-  }
-
-  function renderAllContracts(){
-    const main=document.getElementById("mainArea");
-    main.innerHTML="";
-    Object.entries(contracts).forEach(([key,c])=>{
-      const card=document.createElement("div");card.className="card";
-      card.innerHTML=`<h3>${c.name}</h3><a target="_blank" href="https://basescan.org/address/${c.address}">${c.address}</a>`;
-      c.abi.forEach(fn=>{
-        if(fn.type!=="function")return;
-        const row=document.createElement("div");row.className="fn-row";
-        row.innerHTML=`<div>${fn.name} — ${fn.stateMutability}</div>`;
-        if(fn.stateMutability==="payable"){row.innerHTML+=`<input id="${key}_${fn.name}_value" placeholder="value (ETH)" type="number">`;}
-        const btn=document.createElement("button");btn.className="call-btn";btn.innerText=(fn.stateMutability==="view")?"Call":"Send";
-        btn.onclick=()=>callFn(c,fn,key);
-        row.appendChild(btn);
-        const st=document.createElement("div");st.className="status";st.id=`${key}_${fn.name}_status`;
-        row.appendChild(st);
-        card.appendChild(row);
-      });
-      main.appendChild(card);
+async function connectWallet() {
+  try {
+    provider = await Reown.AppKit.EthereumProvider.init({
+      projectId,
+      chains: [8453],
+      showQrModal: true
     });
+    await provider.enable();
+    signer = new ethers.providers.Web3Provider(provider).getSigner();
+    const addr = await signer.getAddress();
+    document.getElementById("addr").innerText = addr;
+  } catch(e){
+    console.error(e);
+    alert("WalletConnect failed: "+(e.message||e));
   }
+}
 
-  async function callFn(c,fn,key){
-    const st=document.getElementById(`${key}_${fn.name}_status`);st.innerText="...";
-    try{
-      if(fn.stateMutability==="view"){
-        const contract=new ethers.Contract(c.address,c.abi,ethersProvider||new ethers.providers.JsonRpcProvider("https://mainnet.base.org"));
-        const r=await contract[fn.name]();
-        st.innerText="Result: "+r.toString();
-      } else {
-        if(!signer) throw new Error("Connect wallet first");
-        const contract=new ethers.Contract(c.address,c.abi,signer);
-        const tx=await contract[fn.name]();
-        st.innerText="Tx sent: "+tx.hash;
-        await tx.wait();
-        st.innerText="Confirmed: "+tx.hash;
-      }
-    }catch(e){st.innerText="Error: "+(e.message||e);}
-  }
-
-  document.getElementById("btnConnect").onclick=connectWallet;
-  </script>
+document.getElementById("btnConnect").onclick = connectWallet;
+</script>
 </body>
 </html>
