@@ -1,31 +1,32 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Base Utility Contracts — WalletConnect (fixed)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Base Utility Contracts — WalletConnect (fixed)</title>
 
-<!-- Ethers + Web3Modal (WalletConnect v2) UMD bundles -->
-<script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-<script src="https://unpkg.com/@walletconnect/web3modal@2.6.2/dist/index.umd.min.js"></script>
+  <!-- Ethers (UMD) -->
+  <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <!-- UMD build fallback for Web3Modal (kept in case ESM import fails) -->
+  <script src="https://unpkg.com/@walletconnect/web3modal@2.6.2/dist/index.umd.min.js"></script>
 
-<style>
-  body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#071228,#0b2b4b);color:#fff}
-  .wrap{max-width:1050px;margin:28px auto;padding:18px}
-  header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-  h1{color:#ffd166;margin:0;font-size:1.3rem}
-  .controls{display:flex;gap:8px;align-items:center}
-  button{background:#ffd166;color:#041224;border:0;padding:10px 12px;border-radius:8px;cursor:pointer}
-  .addr{font-family:monospace;padding:8px;background:rgba(255,255,255,0.04);border-radius:8px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:18px}
-  .card{background:rgba(255,255,255,0.04);padding:12px;border-radius:12px}
-  .card h3{margin:0 0 8px 0}
-  .fn-row{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-  input[type="text"],input[type="number"],select{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff}
-  .call-btn{background:#00b894;color:#012;border:0;padding:8px;border-radius:8px;cursor:pointer}
-  .status{margin-top:6px;font-size:13px;color:#b7f5c6;min-height:18px;word-break:break-word}
-  footer{margin-top:18px;color:rgba(255,255,255,0.6);font-size:13px}
-</style>
+  <style>
+    body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#071228,#0b2b4b);color:#fff}
+    .wrap{max-width:1050px;margin:28px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    h1{color:#ffd166;margin:0;font-size:1.3rem}
+    .controls{display:flex;gap:8px;align-items:center}
+    button{background:#ffd166;color:#041224;border:0;padding:10px 12px;border-radius:8px;cursor:pointer}
+    .addr{font-family:monospace;padding:8px;background:rgba(255,255,255,0.04);border-radius:8px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:18px}
+    .card{background:rgba(255,255,255,0.04);padding:12px;border-radius:12px}
+    .card h3{margin:0 0 8px 0}
+    .fn-row{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+    input[type="text"],input[type="number"],select{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff}
+    .call-btn{background:#00b894;color:#012;border:0;padding:8px;border-radius:8px;cursor:pointer}
+    .status{margin-top:6px;font-size:13px;color:#b7f5c6;min-height:18px;word-break:break-word}
+    footer{margin-top:18px;color:rgba(255,255,255,0.6);font-size:13px}
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -48,296 +49,259 @@
     </footer>
   </div>
 
-<script>
-/* ====== CONFIG ====== */
-const WC_PROJECT_ID = "0808ceb934963ee4f7d69774d29cb28a";
+  <script type="module">
+  // Use ESM import first (robust). If it fails fallback to UMD global loaded by script tag.
+  const WC_PROJECT_ID = "0808ceb934963ee4f7d69774d29cb28a";
+  let web3Modal = null;
+  let ethersProvider = null;
+  let signer = null;
+  let userAddress = null;
+  let connectedProvider = null;
 
-/* ====== Contracts (address + minimal abi) ======
-   (kept minimal for UI rendering and basic calls)
-*/
-const contracts = {
-  simpleTimer:{ name:"SimpleTimer", address:"0xC1949249093af2d0aaB8a2D2B241e0B828171DE7",
-    abi:[
-      {"inputs":[],"name":"resetTimer","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"getTimeLeft","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-    ]
-  },
-  tipJar:{ name:"TipJar", address:"0x62A3536df479317Bd76480F801278867dB1603Ff",
-    abi:[
-      {"inputs":[],"name":"tip","outputs":[],"stateMutability":"payable","type":"function"},
-      {"inputs":[],"name":"totalTips","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-    ]
-  },
-  votePoll:{ name:"VotePoll", address:"0xCb8A9D3E1Bd3Ea1793DED3373CA1CAc1969766A1",
-    abi:[
-      {"inputs":[{"internalType":"bool","name":"_yes","type":"bool"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"getResults","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-    ]
-  },
-  giveawayBox:{ name:"GiveawayBox", address:"0xea23EC1b0fF0316D8FeD21f26E86aF422fbd6e63",
-    abi:[
-      {"inputs":[],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"claimAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-    ]
-  },
-  messageBoard:{ name:"MessageBoard", address:"0x716CfE1272Ed90A33050af469A83852bE2Ff9260",
-    abi:[
-      {"inputs":[{"internalType":"string","name":"_message","type":"string"}],"name":"setMessage","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"getMessage","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}
-    ]
-  },
-  counter:{ name:"Counter", address:"0x4e42F24592c5F44D8B7E550253A21d14EFF69d29",
-    abi:[
-      {"inputs":[],"name":"increment","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"getCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-    ]
-  }
-  // Add more entries exactly like above if needed
-};
+  // Contracts (minimal ABIs kept small for UI)
+  const contracts = {
+    simpleTimer:{ name:"SimpleTimer", address:"0xC1949249093af2d0aaB8a2D2B241e0B828171DE7",
+      abi:[
+        {"inputs":[],"name":"resetTimer","outputs":[],"stateMutability":"nonpayable","type":"function"},
+        {"inputs":[],"name":"getTimeLeft","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+      ]
+    },
+    tipJar:{ name:"TipJar", address:"0x62A3536df479317Bd76480F801278867dB1603Ff",
+      abi:[
+        {"inputs":[],"name":"tip","outputs":[],"stateMutability":"payable","type":"function"},
+        {"inputs":[],"name":"totalTips","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+      ]
+    },
+    votePoll:{ name:"VotePoll", address:"0xCb8A9D3E1Bd3Ea1793DED3373CA1CAc1969766A1",
+      abi:[
+        {"inputs":[{"internalType":"bool","name":"_yes","type":"bool"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},
+        {"inputs":[],"name":"getResults","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+      ]
+    },
+    giveawayBox:{ name:"GiveawayBox", address:"0xea23EC1b0fF0316D8FeD21f26E86aF422fbd6e63",
+      abi:[
+        {"inputs":[],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},
+        {"inputs":[],"name":"claimAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+      ]
+    },
+    messageBoard:{ name:"MessageBoard", address:"0x716CfE1272Ed90A33050af469A83852bE2Ff9260",
+      abi:[
+        {"inputs":[{"internalType":"string","name":"_message","type":"string"}],"name":"setMessage","outputs":[],"stateMutability":"nonpayable","type":"function"},
+        {"inputs":[],"name":"getMessage","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}
+      ]
+    },
+    counter:{ name:"Counter", address:"0x4e42F24592c5F44D8B7E550253A21d14EFF69d29",
+      abi:[
+        {"inputs":[],"name":"increment","outputs":[],"stateMutability":"nonpayable","type":"function"},
+        {"inputs":[],"name":"getCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+      ]
+    }
+  };
 
-/* ====== state ====== */
-let web3Modal = null;
-let ethersProvider = null;
-let signer = null;
-let userAddress = null;
-let connectedProvider = null;
-
-/* ====== helper: robust Web3Modal init (handles different UMD shapes) ====== */
-function initWeb3Modal() {
-  if (web3Modal) return;
-  // the UMD exposes global(s). try multiple shapes.
-  const W = window.Web3Modal || window.Web3ModalWeb3Modal || window.Web3ModalDefault || window.Web3ModalGlobal || null;
-  try {
-    // attempt constructors in common forms
-    const opts = {
-      projectId: WC_PROJECT_ID,
-      walletConnectVersion: 2,
-      theme: "dark",
-      chains: [{ chainId: 8453, chainName: "Base", rpcUrl: "https://mainnet.base.org" }],
-      metadata: { name: "Base Utility Contracts", description: "WalletConnect v2 demo" }
-    };
-    if (window.Web3Modal && typeof window.Web3Modal === "function") {
-      web3Modal = new window.Web3Modal(opts);
-      return;
-    }
-    if (window.Web3Modal && window.Web3Modal.Web3Modal) {
-      web3Modal = new window.Web3Modal.Web3Modal(opts);
-      return;
-    }
-    if (window.Web3Modal && window.Web3Modal.default) {
-      web3Modal = new window.Web3Modal.default(opts);
-      return;
-    }
-    // fallback to the package global produced by the UMD
-    if (window.Web3ModalGlobal && window.Web3ModalGlobal.Web3Modal) {
-      web3Modal = new window.Web3ModalGlobal.Web3Modal(opts);
-      return;
-    }
-    // last attempt: try the library object from the walletconnect UMD
-    if (window.Web3Modal) {
-      // try creating with it directly
-      try { web3Modal = new window.Web3Modal(opts); return; } catch(e){ /*ignore*/ }
-      try { web3Modal = new window.Web3Modal.Web3Modal(opts); return; } catch(e){ /*ignore*/ }
-    }
-    console.error("Web3Modal constructor not found. Window globals:", { Web3Modal: window.Web3Modal });
-    alert("WalletConnect library failed to initialize. Open devtools console for details.");
-  } catch (e) {
-    console.error("initWeb3Modal error:", e);
-    alert("WalletConnect init error: " + e.message);
-  }
-}
-
-/* Prefer injected wallet (MetaMask / Rabby). If not, use Web3Modal (WalletConnect). */
-async function connectWallet() {
-  try {
-    initWeb3Modal();
-    // prefer injected provider if usable
-    if (window.ethereum && (window.ethereum.isMetaMask || window.ethereum.isRabby || (window.ethereum.providers && window.ethereum.providers.length))) {
-      // if multiple providers exist, pick the one that looks like extension
-      let chosen = window.ethereum;
-      if (window.ethereum.providers && window.ethereum.providers.length) {
-        chosen = window.ethereum.providers.find(p => p.isMetaMask || p.isRabby) || window.ethereum.providers[0];
-      }
-      connectedProvider = chosen;
-      await connectedProvider.request({ method: "eth_requestAccounts" });
-      ethersProvider = new ethers.providers.Web3Provider(connectedProvider);
-    } else {
-      if (!web3Modal) throw new Error("WalletConnect not initialized");
-      connectedProvider = await web3Modal.connect();
-      ethersProvider = new ethers.providers.Web3Provider(connectedProvider);
-    }
-
-    signer = ethersProvider.getSigner();
-    userAddress = await signer.getAddress();
-    document.getElementById("addr").innerText = userAddress;
-    // listen for changes
+  // Try ESM import of Web3Modal
+  async function initWeb3Modal() {
+    if (web3Modal) return web3Modal;
     try {
+      const mod = await import('https://unpkg.com/@walletconnect/web3modal@2.6.2/dist/index.esm.js');
+      const Web3ModalCtor = mod.Web3Modal || mod.default || mod;
+      web3Modal = new Web3ModalCtor({
+        projectId: WC_PROJECT_ID,
+        walletConnectVersion: 2,
+        themeMode: "dark",
+        chains: [8453],
+        metadata: { name: "Base Utility Contracts", description: "WalletConnect v2 demo" }
+      });
+      return web3Modal;
+    } catch (e) {
+      console.warn("ESM import failed, falling back to UMD global:", e);
+      // UMD fallback (loaded via <script> tag). Try common shapes.
+      const W = window.Web3Modal;
+      let Ctor = null;
+      if (W?.default) Ctor = W.default;
+      else if (W?.Web3Modal) Ctor = W.Web3Modal;
+      else if (typeof W === "function") Ctor = W;
+      if (!Ctor) {
+        console.error("Web3Modal not found on window:", window.Web3Modal);
+        throw new Error("WalletConnect library failed to initialize (no Web3Modal).");
+      }
+      web3Modal = new Ctor({
+        projectId: WC_PROJECT_ID,
+        walletConnectVersion: 2,
+        themeMode: "dark",
+        chains: [8453],
+        metadata: { name: "Base Utility Contracts", description: "WalletConnect v2 demo" }
+      });
+      return web3Modal;
+    }
+  }
+
+  async function connectWallet() {
+    try {
+      await initWeb3Modal();
+
+      // Prefer injected extension if available (MetaMask, Rabby, etc.)
+      if (window.ethereum && (window.ethereum.isMetaMask || window.ethereum.isRabby || (window.ethereum.providers && window.ethereum.providers.length))) {
+        // if multiple providers exist pick a wallet-like one
+        let chosen = window.ethereum;
+        if (window.ethereum.providers && window.ethereum.providers.length) {
+          chosen = window.ethereum.providers.find(p=>p.isMetaMask||p.isRabby) || window.ethereum.providers[0];
+        }
+        connectedProvider = chosen;
+        await connectedProvider.request({ method: "eth_requestAccounts" });
+        ethersProvider = new ethers.providers.Web3Provider(connectedProvider);
+      } else {
+        // fallback to modal (WalletConnect)
+        connectedProvider = await web3Modal.connect();
+        ethersProvider = new ethers.providers.Web3Provider(connectedProvider);
+      }
+
+      signer = ethersProvider.getSigner();
+      userAddress = await signer.getAddress();
+      document.getElementById("addr").innerText = userAddress;
+
+      // attach basic listeners (best-effort)
       if (connectedProvider.on) {
         connectedProvider.on("accountsChanged", (accounts) => {
           document.getElementById("addr").innerText = accounts && accounts[0] ? accounts[0] : "Not connected";
         });
-        connectedProvider.on("chainChanged", () => {
-          // reload to avoid mismatched ABI/chain issues
-          window.location.reload();
-        });
-        connectedProvider.on("disconnect", () => {
-          resetUI();
-        });
+        connectedProvider.on("chainChanged", () => { location.reload(); });
+        connectedProvider.on("disconnect", () => { resetUI(); });
       }
-    } catch(e){ /* ignore event attach errors */ }
 
-    renderAllContracts();
-    await updateAllViews();
-  } catch (err) {
-    console.error("connectWallet:", err);
-    alert("Connection failed: " + (err?.message || err));
+      renderAllContracts();
+      await updateAllViews();
+    } catch (err) {
+      console.error("connectWallet error:", err);
+      alert("Connection failed: " + (err?.message || err));
+    }
   }
-}
 
-function resetUI() {
-  document.getElementById("addr").innerText = "Not connected";
-  ethersProvider = null;
-  signer = null;
-  userAddress = null;
-  document.getElementById("mainArea").innerHTML = "";
-}
+  function resetUI() {
+    document.getElementById("addr").innerText = "Not connected";
+    ethersProvider = null; signer = null; userAddress = null; connectedProvider = null;
+    document.getElementById("mainArea").innerHTML = "";
+  }
 
-/* Render UI from `contracts` object */
-function renderAllContracts() {
-  const main = document.getElementById("mainArea");
-  main.innerHTML = "";
-  Object.keys(contracts).forEach(key => {
-    const c = contracts[key];
-    const card = document.createElement("div");
-    card.className = "card";
-    const h = document.createElement("h3"); h.innerText = `${c.name}`; card.appendChild(h);
-    const link = document.createElement("a"); link.href = `https://basescan.org/address/${c.address}#code`; link.target="_blank"; link.style.color="#fff"; link.innerText = c.address; card.appendChild(link);
+  // Build contract UI
+  function renderAllContracts() {
+    const main = document.getElementById("mainArea");
+    main.innerHTML = "";
+    Object.keys(contracts).forEach(key => {
+      const c = contracts[key];
+      const card = document.createElement("div"); card.className="card";
+      const h = document.createElement("h3"); h.innerText = c.name; card.appendChild(h);
+      const a = document.createElement("a"); a.href = `https://basescan.org/address/${c.address}#code`; a.target="_blank"; a.style.color="#fff"; a.innerText = c.address;
+      card.appendChild(a);
 
-    c.abi.forEach(fn=>{
-      if (fn.type !== "function") return;
-      const row = document.createElement("div"); row.className="fn-row";
-      const title = document.createElement("div"); title.innerText = `${fn.name}(${(fn.inputs||[]).map(i=>i.type).join(",")}) — ${fn.stateMutability}`; title.style.opacity="0.9";
-      row.appendChild(title);
-
-      (fn.inputs || []).forEach(inp=>{
-        const inpEl = document.createElement("input");
-        inpEl.placeholder = `${inp.name} (${inp.type})`;
-        inpEl.id = `${key}_${fn.name}_${inp.name}`;
-        row.appendChild(inpEl);
+      c.abi.forEach(fn=> {
+        if (fn.type !== "function") return;
+        const row = document.createElement("div"); row.className="fn-row";
+        const title = document.createElement("div"); title.innerText = `${fn.name}(${(fn.inputs||[]).map(i=>i.type).join(",")}) — ${fn.stateMutability}`; row.appendChild(title);
+        (fn.inputs||[]).forEach(inp=>{
+          const input = document.createElement("input"); input.placeholder = `${inp.name} (${inp.type})`; input.id = `${key}_${fn.name}_${inp.name}`; row.appendChild(input);
+        });
+        if (fn.stateMutability === "payable") {
+          const v = document.createElement("input"); v.placeholder="value (ETH)"; v.id = `${key}_${fn.name}_value`; v.type="number"; v.step="0.000000000000000001"; row.appendChild(v);
+        }
+        const btn = document.createElement("button"); btn.className="call-btn"; btn.innerText = (fn.stateMutability==="view"||fn.stateMutability==="pure") ? "Call (view)" : "Send TX";
+        btn.onclick = ()=>callContractFunction(key, fn.name);
+        row.appendChild(btn);
+        const status = document.createElement("div"); status.className="status"; status.id = `${key}_${fn.name}_status`; row.appendChild(status);
+        card.appendChild(row);
       });
-      if (fn.stateMutability === "payable") {
-        const v = document.createElement("input"); v.placeholder="value (ETH)"; v.id = `${key}_${fn.name}_value`; v.type="number"; v.step="0.000000000000000001"; row.appendChild(v);
+
+      main.appendChild(card);
+    });
+  }
+
+  async function callContractFunction(key, fnName) {
+    const c = contracts[key];
+    const fn = c.abi.find(x=>x.name===fnName && x.type==="function");
+    const statusEl = document.getElementById(`${key}_${fnName}_status`);
+    if (!statusEl) return;
+    statusEl.innerText = "Working...";
+    try {
+      const args = (fn.inputs||[]).map(inp => {
+        const el = document.getElementById(`${key}_${fnName}_${inp.name}`);
+        const raw = el ? el.value.trim() : "";
+        if (inp.type.endsWith("[]")) return raw ? raw.split(",").map(s=>s.trim()) : [];
+        // basic type casting left as-is (string for address)
+        return raw || (inp.type==="address" ? "0x0000000000000000000000000000000000000000" : 0);
+      });
+
+      if (fn.stateMutability==="view"||fn.stateMutability==="pure") {
+        const provider = ethersProvider || new ethers.providers.JsonRpcProvider("https://mainnet.base.org");
+        const contract = new ethers.Contract(c.address, c.abi, provider);
+        const res = await contract[fnName](...args);
+        statusEl.innerText = `Result: ${formatResult(res)}`;
+        return;
       }
 
-      const btn = document.createElement("button");
-      btn.className = "call-btn";
-      btn.innerText = (fn.stateMutability==="view"||fn.stateMutability==="pure") ? "Call (view)" : "Send TX";
-      btn.onclick = ()=>callContractFunction(key, fn.name);
-      row.appendChild(btn);
+      if (!ethersProvider) throw new Error("Connect wallet first");
+      if (!signer) signer = ethersProvider.getSigner();
+      const contract = new ethers.Contract(c.address, c.abi, signer);
 
-      const status = document.createElement("div"); status.className="status"; status.id = `${key}_${fn.name}_status`; row.appendChild(status);
+      let overrides = {};
+      if (fn.stateMutability === "payable") {
+        const vEl = document.getElementById(`${key}_${fnName}_value`);
+        const v = (vEl && vEl.value) ? vEl.value : "0";
+        overrides.value = ethers.utils.parseEther(String(v || "0"));
+      }
 
-      card.appendChild(row);
-    });
+      const tx = await contract[fnName](...args, overrides);
+      statusEl.innerText = `Tx sent: ${tx.hash} — waiting...`;
+      await tx.wait();
+      statusEl.innerText = `Confirmed: ${tx.hash}`;
+      setTimeout(()=>updateContractViews(key),700);
+    } catch (err) {
+      console.error("callContractFunction error:", err);
+      statusEl.innerText = "Error: " + (err?.message || String(err));
+    }
+  }
 
-    main.appendChild(card);
-  });
-}
+  function formatResult(r) {
+    try {
+      if (Array.isArray(r)) return JSON.stringify(r);
+      if (r && r._isBigNumber) return r.toString();
+      return String(r);
+    } catch(e){ return String(r); }
+  }
 
-/* Call or send tx */
-async function callContractFunction(key, fnName) {
-  const c = contracts[key];
-  const fn = c.abi.find(x=>x.name===fnName && x.type==="function");
-  const statusEl = document.getElementById(`${key}_${fnName}_status`);
-  if (!statusEl) return;
-  statusEl.innerText = "Working...";
-  try {
-    // prepare args
-    const args = (fn.inputs || []).map(inp => {
-      const el = document.getElementById(`${key}_${fnName}_${inp.name}`);
-      const v = el ? el.value.trim() : "";
-      if (inp.type.endsWith("[]")) return v ? v.split(",").map(s=>s.trim()) : [];
-      return v || (inp.type === "address" ? "0x0000000000000000000000000000000000000000" : 0);
-    });
-
-    // provider for view or signer for tx
-    if ((fn.stateMutability==="view"||fn.stateMutability==="pure")) {
+  async function updateContractViews(key) {
+    try {
+      const c = contracts[key];
       const provider = ethersProvider || new ethers.providers.JsonRpcProvider("https://mainnet.base.org");
       const contract = new ethers.Contract(c.address, c.abi, provider);
-      const res = await contract[fnName](...args);
-      statusEl.innerText = `Result: ${formatResult(res)}`;
-      return;
-    }
-
-    if (!ethersProvider) throw new Error("Connect wallet first");
-    if (!signer) signer = ethersProvider.getSigner();
-    const contract = new ethers.Contract(c.address, c.abi, signer);
-
-    // payable override
-    let overrides = {};
-    if (fn.stateMutability === "payable") {
-      const vEl = document.getElementById(`${key}_${fnName}_value`);
-      const v = vEl && vEl.value ? vEl.value : "0";
-      overrides.value = ethers.utils.parseEther(String(v || "0"));
-    }
-
-    const tx = await contract[fnName](...args, overrides);
-    statusEl.innerText = `Tx sent: ${tx.hash} — waiting...`;
-    await tx.wait();
-    statusEl.innerText = `Confirmed: ${tx.hash}`;
-    // small refresh
-    setTimeout(()=>updateContractViews(key),700);
-  } catch (err) {
-    console.error("callContractFunction error:", err);
-    statusEl.innerText = "Error: " + (err?.message || String(err));
+      (c.abi||[]).forEach(async fn=>{
+        if (fn.type!=="function") return;
+        if (fn.stateMutability==="view"||fn.stateMutability==="pure") {
+          const statusEl = document.getElementById(`${key}_${fn.name}_status`);
+          if (!statusEl) return;
+          try {
+            const args = (fn.inputs||[]).map(inp=>{
+              const el = document.getElementById(`${key}_${fn.name}_${inp.name}`);
+              return (el && el.value) ? el.value : (inp.type==="address" ? "0x0000000000000000000000000000000000000000" : 0);
+            });
+            const res = await contract[fn.name](...args);
+            statusEl.innerText = `Result: ${formatResult(res)}`;
+          } catch(e){ /* ignore */ }
+        }
+      });
+    } catch(e){ /* ignore */ }
   }
-}
 
-function formatResult(r) {
-  try {
-    if (Array.isArray(r)) return JSON.stringify(r);
-    if (r && r._isBigNumber) return r.toString();
-    return String(r);
-  } catch(e){ return String(r); }
-}
+  async function updateAllViews() {
+    const keys = Object.keys(contracts);
+    await Promise.all(keys.map(k=>updateContractViews(k)));
+  }
 
-/* Update view-only fields for a contract */
-async function updateContractViews(key) {
-  try {
-    const c = contracts[key];
-    const provider = ethersProvider || new ethers.providers.JsonRpcProvider("https://mainnet.base.org");
-    const contract = new ethers.Contract(c.address, c.abi, provider);
-    (c.abi || []).forEach(async fn=>{
-      if (fn.type!=="function") return;
-      if (fn.stateMutability==="view"||fn.stateMutability==="pure") {
-        const statusEl = document.getElementById(`${key}_${fn.name}_status`);
-        if (!statusEl) return;
-        try {
-          const args = (fn.inputs || []).map(inp=> {
-            const el = document.getElementById(`${key}_${fn.name}_${inp.name}`);
-            return (el && el.value) ? el.value : (inp.type==="address" ? "0x0000000000000000000000000000000000000000" : 0);
-          });
-          const res = await contract[fn.name](...args);
-          statusEl.innerText = `Result: ${formatResult(res)}`;
-        } catch(e){ /* ignore view errors */ }
-      }
-    });
-  } catch(e){ /* ignore */ }
-}
+  // wire connect button
+  document.getElementById("btnConnect").addEventListener("click", async ()=>{
+    try { await connectWallet(); } catch(e){ console.error(e); alert("Connect failed: " + (e?.message||e)); }
+  });
 
-async function updateAllViews() {
-  const keys = Object.keys(contracts);
-  await Promise.all(keys.map(k=>updateContractViews(k)));
-}
-
-/* Boot */
-document.getElementById("btnConnect").addEventListener("click", async ()=>{
-  await connectWallet();
-});
-window.addEventListener("load", ()=>{
-  initWeb3Modal();
-  renderAllContracts(); // show UI before connect
-});
-</script>
+  // show UI early
+  renderAllContracts();
+  </script>
 </body>
 </html>
